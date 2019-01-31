@@ -19,21 +19,19 @@ baseurl:               ''
 lang:                  en
 
 # The title of your blog. Used in the sidebar and the browser tab.
-title:                 Hydejack Starter Kit
+title:                 Microbes made me do it
 
 # A short description (~150 chars) of the page used for the meta description tag.
 # Can use markdown, but no more than one paragraph (enforced by `>`)
 description:           >
-  A Jekyll theme with JavaScript powers. "Best Theme by a Mile".
-  Combines the best of static sites and modern web apps.
-  Open `_config.yml` to edit this text.
+  Posts about microbes, genomics, bioinformatics, and anything else relevant to my PhD.
 
 # A shorter description for the sidebar.
-tagline:               >
-  Open `_config.yml` to edit this text.
+# tagline:               >
+#   Everything comes back to bugs.
 
 # A list of keywords for your blog.
-keywords:              []
+keywords:              [bioinformatics, genomics, bacteria, microbes]
 
 # Used by jekyll-seo-tag.
 logo:                  /assets/icons/icon.png
@@ -41,15 +39,15 @@ logo:                  /assets/icons/icon.png
 # This should be the same author as first entry in `_data/authors.yml`.
 author:
   # Used by `jekyll-feed`:
-  name:                <firstname> <lastname>
-  email:               <mail@domain.tld>
+  name:                Michael Hall
+  email:               mbhall88@gmail.com
   # Used by `jekyll-seo-tag`:
-  # twitter:             <username>
+  twitter:             mbhall88
+  github:              mbhall88
 
 # This text will appear in a `<small>` tag in the footer of every page.
 copyright:             >
-  © 2018. All rights reserved.
-  Open `_config.yml` to edit this text.
+  © 2019. All rights reserved.
 
 # Add links to the footer.
 # Typically you'll want to link to your impress, cookies or privacy policy, etc.
@@ -116,11 +114,11 @@ defaults:
 
 # Set your Google Analytics id to receive `pageview` events.
 # To remove Google Anaylics from your page, remove the line below.
-# google_analytics:      UA-XXXXXXXX-X
+google_analytics:      UA-133549196-1
 
 # Setting a disqus shortname will enable the comment section on
 # pages with `comments: true` in the front matter.
-# disqus:                <disqus_shortname>
+disqus:                mbhall88
 
 # Setting a tinyletter username will enable the newsletter subscription box.
 # PRO version only!
@@ -245,8 +243,8 @@ remote_theme: qwtel/hydejack@v8.1.1
 #   yandex:              <verification-id>
 
 # Used for Twitter cards
-# twitter:
-#   username:            <twitter handle>
+twitter:
+  username:            mbhall88
 
 # Used for Facebook open graph
 # facebook:
@@ -255,11 +253,11 @@ remote_theme: qwtel/hydejack@v8.1.1
 #   admins:              <id>
 
 # Used on index and about sites
-# social:
-#   name:                <firstname> <lastname>
-#   links:
-#     - https://twitter.com/<username>
-#     - https://github.com/<username>
+social:
+  name:                Michael Hall
+  links:
+    - https://twitter.com/mbhall88
+    - https://github.com/mbhall88
 
 
 # Other Plugins
