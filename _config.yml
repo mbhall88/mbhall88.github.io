@@ -41,6 +41,7 @@ author:
   # Used by `jekyll-feed`:
   name:                Michael Hall
   email:               mbhall88@gmail.com
+  picture:             https://avatars3.githubusercontent.com/u/20403931?s=400&u=d78be5d8f1771d05447b6b779d18ab78d801adf8&v=4
   # Used by `jekyll-seo-tag`:
   twitter:             mbhall88
   github:              mbhall88
@@ -69,7 +70,7 @@ paginate_path:         /page-:num/
 # ========================================================================================
 
 # Sidebar image and theme color of the site.
-accent_image:          /assets/img/sidebar-bg.jpg
+accent_image:          bacteria.png
 accent_color:          rgb(79,177,186)
 
 # This is used for the `theme-color` meta tag,

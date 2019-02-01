@@ -3,33 +3,29 @@
 # You can change `author1` to your shortname.
 author1:
   # Replace <...> with your own (remove the < >)
-  name:              <firstname> <lastname>
-  email:             <mail@domain.tld>
+  name:              Michael Hall
+  email:             mbhall88@gmail.com
 
   # Used at the bottom of each page and at the top of the `about` layout
   # Markdown enabled, can use multiple paragraphs (enabled by `|`)
   about:             |
-    Lorem ipsum dolor sit amet, consectetur adipiscing elit,
-    sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
-    Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
-
-    Open `_data/authors.yml` to edit this text.
+    My name is Michael Hall and I am a Bioinformatics PhD student in [Zam Iqbal's lab](https://www.ebi.ac.uk/research/iqbal) at EMBL-EBI. I currently work on using nanopore data and genome graphs to better call variation in bacterial genomes and to compare pan-genomes.
 
   # This photo will be used in the about section.
   picture:
-    path:            https://placehold.it/128x128
+    path:            https://avatars3.githubusercontent.com/u/20403931?s=400&u=d78be5d8f1771d05447b6b779d18ab78d801adf8&v=4
     # srcset is optional, but can be used to provide higher res versions for retina displays
     srcset:
-      1x:            https://placehold.it/128x128
-      2x:            https://placehold.it/256x256
+      1x:            https://avatars3.githubusercontent.com/u/20403931?s=400&u=d78be5d8f1771d05447b6b779d18ab78d801adf8&v=4
+      2x:            https://avatars3.githubusercontent.com/u/20403931?s=400&u=d78be5d8f1771d05447b6b779d18ab78d801adf8&v=4
 
   # Social media icons in sidebar.
   # Comment/uncommet to show/hide. Rearrange to change the order in which they appear.
   social:
-    twitter:         jekyllrb
-    github:          qwtel/hydejack
+    twitter:         mbhall88
+    github:          mbhall88
     # download:        <url>
-    # email:           <mail@domain.tld>
+    email:           mbhall88@gmail.com
     # rss:             https://<url>/feed.xml
     # facebook:        <username>
     # google:          <number>
@@ -54,7 +50,7 @@ author1:
     # pinterest:       <username>
     # foursquare:      <number>
     # yelp:            <string>
-    # stackoverflow:   <number/username>
+    stackoverflow:   5299417/michael-hall
     # npm:             <username>
     # hackernews:      <username>
     # trello:          <firstnamelastname>
