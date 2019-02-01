@@ -1,7 +1,7 @@
 ---
 layout: post
-title: "Benchmark Guppy algorithms"
-date: 2019-01-31
+title: "Benchmarking Guppy algorithms"
+date: 2019-02-01
 ---
 
 ONT's basecaller Guppy has recently been released to the masses. And with the announcement of the new "[flip-flop](https://community.nanoporetech.com/posts/pre-release-of-stand-alone)" basecalling algorithm there is now the choice of two different algorithms for basecalling.
@@ -148,8 +148,9 @@ Do the same thing for `Guppy_testing/flipflop`.
 
 Probably the most startling thing for me initially was the Phred quality scores that the flip-flop algorithm was producing.
 
-![Screenshot 2019-01-31 14.50.31.png]({{site.baseurl}}/_posts/Screenshot 2019-01-31 14.50.31.png)
-*Figure 1: Guppy default basecalling algorithm quality vs read length. The y-axis shows the Phred quality score average for each read. The x-axis is the reads length in base pairs.*
+![Pistis quality vs read length plot for default algorithm /assests/img/posts/guppy/default_quality_vs_len.png]({{site.baseurl}}/assests/img/posts/guppy/default_quality_vs_len.png)
+Figure 1: Guppy default basecalling algorithm quality vs read length. The y-axis shows the Phred quality score average for each read. The x-axis is the reads length in base pairs.
+{:.figure}
 
 We can see from Figure 1 above that the Phred scores for the default algorithm are centred around 14. However, when we look at the same plot for the flip-flop algorithm (Figure 2), we see a very different story in terms of quality scores.
 
