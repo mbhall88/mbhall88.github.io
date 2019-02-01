@@ -148,15 +148,16 @@ Do the same thing for `Guppy_testing/flipflop`.
 
 Probably the most startling thing for me initially was the Phred quality scores that the flip-flop algorithm was producing.
 
-![Pistis quality vs read length plot for default algorithm /assests/img/posts/guppy/default_quality_vs_len.png]({{site.baseurl}}/assests/img/posts/guppy/default_quality_vs_len.png)
+![Pistis quality vs read length plot for default algorithm](/assets/img/posts/guppy/default_quality_vs_len.png)
 Figure 1: Guppy default basecalling algorithm quality vs read length. The y-axis shows the Phred quality score average for each read. The x-axis is the reads length in base pairs.
 {:.figure}
 
 We can see from Figure 1 above that the Phred scores for the default algorithm are centred around 14. However, when we look at the same plot for the flip-flop algorithm (Figure 2), we see a very different story in terms of quality scores.
 
 
-![Screenshot 2019-01-31 14.51.16.png]({{site.baseurl}}/_posts/Screenshot 2019-01-31 14.51.16.png)
-*Figure 2: Guppy flip-flop basecalling algorithm quality vs read length. The y-axis shows the Phred quality score average for each read. The x-axis is the reads length in base pairs.*
+![Pistis quality vs read length plot for flip-flop algorithm](/assets/img/posts/guppy/flipflop_quality_vs_len.png)
+Figure 2: Guppy flip-flop basecalling algorithm quality vs read length. The y-axis shows the Phred quality score average for each read. The x-axis is the reads length in base pairs.
+{:.figure}
 
 As you can see, flip-flop seems to rate itself *very* highly. The most dense part of the kernel being around Phred score 42....yes, **42**.
 
@@ -201,8 +202,9 @@ p = sns.barplot(data=yield_df, x="barcode", y="aligned_bases",
 p = p.set(title="Total yield", ylabel="aligned bases (bp)")
 ```
 
-![total_yield.png]({{site.baseurl}}/_posts/total_yield.png)
-*Figure 3: Total number of bases produced by the Guppy default (blue) and flip-flop (orange) algorithms for each barcode.*
+![Total Yield](/assets/img/posts/guppy/total_yield.png)
+Figure 3: Total number of bases produced by the Guppy default (blue) and flip-flop (orange) algorithms for each barcode.
+{:.figure}
 
 As you can see. Flip-flop consistently produces more bases. The impact of this will be seen when we look at the relative read lengths for both algorithms.
 
@@ -218,8 +220,9 @@ p = sns.violinplot(x='barcode', y='gc_content', data=df, split=True, inner="quar
 p = p.set(title="GC content", ylabel="GC proportion per read (%)")
 ```
 
-![gc_content.png]({{site.baseurl}}/_posts/gc_content.png)
-*Figure 4: GC content for each barcode calculated on a per read basis for both the default (blue) and flip-flop (orange) algorithms of Guppy.*
+![GC content](/assets/img/posts/guppy/gc_content.png)
+Figure 4: GC content for each barcode calculated on a per read basis for both the default (blue) and flip-flop (orange) algorithms of Guppy.
+{:.figure}
 
 I plotted this many different ways and the distributions were nearly identitcal every way I looked at it. So I guess the flip-flop algorithm may have changed a bit since Keith looked at it, or potentially ONT has some *M. tuberculosis* in there training dataset?
 
@@ -236,8 +239,9 @@ p = p.set(title="Read identity", ylabel="Read percent identity (%)")
 _ = ax.set_xlim((50, 100))
 _ = plt.legend(loc='lower right')
 ```
-![pid.png]({{site.baseurl}}/_posts/pid.png)
-*Figure 5: Read percent identity for primary alignments to the * M. tuberculosis* reference, NC_000962.3. Blue shows the default algorithm for Guppy and orange shows the flip-flop algorithm. The dashed lines within the violins show the percentiles of the data.*
+![Read percent identity](/assets/img/posts/guppy/pid.png)
+Figure 5: Read percent identity for primary alignments to the  M. tuberculosis reference, NC_000962.3. Blue shows the default algorithm for Guppy and orange shows the flip-flop algorithm. The dashed lines within the violins show the percentiles of the data.
+{:.figure}
 
 Wow! That is a pretty good improvement. On average, flip-flop has about 2% higher read identity compared to Guppy's default algorithm.
 
@@ -254,8 +258,9 @@ p = p.set(title="Relative read length", ylabel="read alignment length / ref alig
 _ = ax.set_ylim((0.75, 1.25))
 ```
 
-![rel_len.png]({{site.baseurl}}/_posts/rel_len.png)
-*Figure 6: Relative read length for Guppy's default (blue) and flip-flop (orange) algorithms. Relative read length is calculated as the length of the aligned part of the read and divide it by the length of the aligned part of the reference.*
+![Relative read length](/assets/img/posts/guppy/rel_len.png)
+Figure 6: Relative read length for Guppy's default (blue) and flip-flop (orange) algorithms. Relative read length is calculated as the length of the aligned part of the read and divide it by the length of the aligned part of the reference.
+{:.figure}
 
 So it appears that flip-flop on average causes more deletions than insertions, but it definitely an improvement on the default algorithm. As we saw from the total yield plot, flip-flop produces more bases and the outcome of that, at least for *M. tuberculosis* in the case, is less deletions.
 
