@@ -34,7 +34,7 @@ description:           >
 keywords:              [bioinformatics, genomics, bacteria, microbes]
 
 # Used by jekyll-seo-tag.
-logo:                  /assets/icons/icon.png
+logo:                  /assets/img/icons/bug.png
 
 # This should be the same author as first entry in `_data/authors.yml`.
 author:

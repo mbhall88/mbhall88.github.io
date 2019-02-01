@@ -4,6 +4,12 @@ title: "Benchmarking Guppy algorithms"
 date: 2019-02-01
 ---
 
+* Methods
+* Results
+* Conclusions
+* Supplementary code
+{:toc}
+
 ONT's basecaller Guppy has recently been released to the masses. And with the announcement of the new "[flip-flop](https://community.nanoporetech.com/posts/pre-release-of-stand-alone)" basecalling algorithm there is now the choice of two different algorithms for basecalling.
 
 ONT have obviously been singing flip-flop's praises, and understandably so, as the [initial results](https://community.nanoporetech.com/posts/pre-release-of-stand-alone) look like a decent step up in read accuracy.
@@ -16,7 +22,11 @@ What I will do here is walk through a small-scale basecalling algorithm comparis
 
 XXX add sample details.
 
-I'll add in some code snippets for how I ran this analysis so you can recreate at home with your own data too. If you aren't interested and just want to see some results then feel free to [skip ahead](#Results)
+I'll add in some code snippets for how I ran this analysis so you can recreate at home with your own data too. If you aren't interested and just want to see some results then feel free to [skip ahead](#results).
+
+---
+
+# Methods
 
 ## Basecall
 
@@ -274,7 +284,9 @@ I hope someone finds this useful. And of course, if you have any problems with a
 
 ---
 
-## Code for preparing data for plotting
+# Supplementary code
+
+This code was used for preparing the data for plotting.
 
 ```py
 import pysam
