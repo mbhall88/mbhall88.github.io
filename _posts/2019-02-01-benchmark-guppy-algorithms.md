@@ -20,7 +20,7 @@ As *M. tuberculosis* has a GC content around 65% I thought it best to do a littl
 
 What I will do here is walk through a small-scale basecalling algorithm comparison of the default Guppy algorithm and the flip-flop algorithm that comes as a config option with Guppy.
 
-XXX add sample details.
+The data I am using to run this analysis was sequenced on a R9.4.1 flowcell. It was also a multiplexed run with 5 clinical samples of *M. tuberculosis*.
 
 I'll add in some code snippets for how I ran this analysis so you can recreate at home with your own data too. If you aren't interested and just want to see some results then feel free to [skip ahead](#results).
 
