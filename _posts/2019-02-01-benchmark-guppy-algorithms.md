@@ -16,7 +16,9 @@ ONT has obviously been singing flip-flop's praises, and understandably so, as th
 
 For an upcoming project I am going to be doing *a lot* of basecalling of *Mycobacterium tuberculosis* and given the project will involve assessing metrics heavily reliant on read accuracy I thought it best to invest some time in deciding which algorithm to go with. Another reason for my indecision came when I read a [recent blog from Keith Robison](https://omicsomics.blogspot.com/2018/12/flappie-vs-albacore-via-counterr.html) which showed that maybe the new flip-flop algorithm doesn't work well with organisms that have a higher GC content.
 
-As *M. tuberculosis* has a GC content around 65% I thought it best to do a little benchmarking of the two basecalling algorithms first. Unfortunately for me, I couldn't really rely on the results from [Ryan Wick's wonderful basecalling comparison](https://github.com/rrwick/Basecalling-comparison) due to the species he used, *E. coli*, having a roughly even GC content, and also the comparison has not been updated since the release of the new Guppy and flip-flop algorithm.
+As *M. tuberculosis* has a GC content around 65% I thought it best to do a little benchmarking of the two basecalling algorithms first. Unfortunately for me, I couldn't really rely on the results from [Ryan Wick's wonderful basecalling comparison](https://github.com/rrwick/Basecalling-comparison) due to the species he used, *E. coli*, having a roughly even GC content.  
+
+*Note*: Just before publishing this post Ryan [released an updated version of the comparison as a preprint](https://www.biorxiv.org/node/164533.full). In the test set there was one bacteria, *Stenotrophomonas maltophilia*, with a [GC content similar](https://www.ncbi.nlm.nih.gov/genome/?term=Stenotrophomonas%20maltophilia[Organism]&cmd=DetailsSearch) to *M. tuberculosis*. Figure 2 in that paper shows flip-flop as having a higher read identity than the default Guppy algorithm.
 
 What I will do here is walk through a small-scale basecalling algorithm comparison of the default Guppy algorithm and the flip-flop algorithm that comes as a config option with Guppy.
 
@@ -278,7 +280,7 @@ So it appears that flip-flop, on average, causes more deletions than insertions,
 
 # Conclusions
 
-So in conclusion, for *M. tuberculosis* you can make a strong argument for using the flip-flop algorithm over the default. You get more accurate reads with fewer deletions. But the big caveat is time. Flip-flop is much slower than the default algorithm. At least on CPUs, it is probably only feasible to use flip-flop if you have a computing cluster with at least 16 cores you can grab unless you want to smash your laptop for a week or so. As I said earlier, I have not been able to run Guppy on GPUs yet, so I am interested to see how much faster flip-flop GPU is compared to the CPU version.
+So in conclusion, given the results from Ryan Wick on *S. maltophilia* and those presented here on *M. tuberculosis*, you can make a strong argument for using the flip-flop algorithm over the default for GC-rich genomes without much concern regarding accuracy. You get more accurate reads with fewer deletions. But the big caveat is time. Flip-flop is much slower than the default algorithm. At least on CPUs, it is probably only feasible to use flip-flop if you have a computing cluster with at least 16 cores you can grab unless you want to smash your laptop for a week or so. As I said earlier, I have not been able to run Guppy on GPUs yet, so I am interested to see how much faster flip-flop GPU is compared to the CPU version.
 
 I hope someone finds this useful. And of course, if you have any problems with anything I have done please do get in touch.
 
