@@ -272,7 +272,7 @@ _ = ax.set_ylim((0.75, 1.25))
 Figure 6: Relative read length for Guppy's default (blue) and flip-flop (orange) algorithms. Relative read length is calculated as the length of the aligned part of the read and divide it by the length of the aligned part of the reference.
 {:.figure}
 
-So it appears that flip-flop on average causes more deletions than insertions, but it definitely an improvement on the default algorithm. As we saw from the total yield plot, flip-flop produces more bases and the outcome of that, at least for *M. tuberculosis* in the case, is fewer deletions.
+So it appears that flip-flop, on average, causes more deletions than insertions, but it is definitely an improvement on the default algorithm. As we saw from the total yield plot, flip-flop produces more bases and the outcome of that, at least for *M. tuberculosis* in the case, is fewer deletions.
 
 ---
 
