@@ -12,15 +12,15 @@ date: 2019-02-01
 
 ONT's basecaller Guppy has recently been released to the masses. And with the announcement of the new "[flip-flop](https://community.nanoporetech.com/posts/pre-release-of-stand-alone)" basecalling algorithm there is now the choice of two different algorithms for basecalling.
 
-ONT have obviously been singing flip-flop's praises, and understandably so, as the [initial results](https://community.nanoporetech.com/posts/pre-release-of-stand-alone) look like a decent step up in read accuracy.
+ONT has obviously been singing flip-flop's praises, and understandably so, as the [initial results](https://community.nanoporetech.com/posts/pre-release-of-stand-alone) look like a decent step up in read accuracy.
 
 For an upcoming project I am going to be doing *a lot* of basecalling of *Mycobacterium tuberculosis* and given the project will involve assessing metrics heavily reliant on read accuracy I thought it best to invest some time in deciding which algorithm to go with. Another reason for my indecision came when I read a [recent blog from Keith Robison](https://omicsomics.blogspot.com/2018/12/flappie-vs-albacore-via-counterr.html) which showed that maybe the new flip-flop algorithm doesn't work well with organisms that have a higher GC content.
 
-As *M. tuberculosis* has a GC content around 65% I thought it best to do a little benchmarking of the two basecalling algorithms first. Unfortunately for me I couldn't really rely on the results from [Ryan Wick's wonderful basecalling comparison](https://github.com/rrwick/Basecalling-comparison) due the species he used, *E. coli*, having a roughly even GC content, and also the comparison has not been updated since the release of the new Guppy and flip-flop algorithm.
+As *M. tuberculosis* has a GC content around 65% I thought it best to do a little benchmarking of the two basecalling algorithms first. Unfortunately for me, I couldn't really rely on the results from [Ryan Wick's wonderful basecalling comparison](https://github.com/rrwick/Basecalling-comparison) due to the species he used, *E. coli*, having a roughly even GC content, and also the comparison has not been updated since the release of the new Guppy and flip-flop algorithm.
 
 What I will do here is walk through a small-scale basecalling algorithm comparison of the default Guppy algorithm and the flip-flop algorithm that comes as a config option with Guppy.
 
-The data I am using to run this analysis was sequenced on a R9.4.1 flowcell. It was also a multiplexed run with 5 clinical samples of *M. tuberculosis*.
+The data I am using to run this analysis was sequenced on an R9.4.1 flowcell. It was also a multiplexed run with 5 clinical samples of *M. tuberculosis*.
 
 I'll add in some code snippets for how I ran this analysis so you can recreate at home with your own data too. If you aren't interested and just want to see some results then feel free to [skip ahead](#results).
 
@@ -30,7 +30,7 @@ I'll add in some code snippets for how I ran this analysis so you can recreate a
 
 ## Basecall
 
-The only thing we need to change in order to use the flip-flop algorithm is change the config file used.
+The only thing we need to change in order to use the flip-flop algorithm is to change the config file used.
 
 ### Default config
 ```sh
@@ -54,21 +54,21 @@ input=../fast5
 output=basecalled_fastq/
 
 guppy_basecaller --input_path "$input" \
-	--save_path "$output" \
-	--recursive \
-	--verbose_logs \
-	--worker_threads 32 \
-	--config dna_r9.4.1_450bps_flipflop.cfg
+    --save_path "$output" \
+    --recursive \
+    --verbose_logs \
+    --worker_threads 32 \
+    --config dna_r9.4.1_450bps_flipflop.cfg
 ```
 Basecalling took 4051443 CPU seconds. As there are 1009917 reads total, that is approximately 15 reads/min.
 
-At the time of writing this I have not been able to run Guppy on the GPUs here. But once I have done that I will add the runtime figures for that too.
+At the time of writing this, I have not been able to run Guppy on the GPUs here. But once I have done that I will add the runtime figures for that too.
 
-In terms of wall clock time, I ran the default config on 32 cores and it completed in 4.33 hours. For the flip-flop I also ran it on 32 cores and it completed in 35.33 hours.
+In terms of wall clock time, I ran the default config on 32 cores and it completed in 4.33 hours. For the flip-flop, I also ran it on 32 cores and it completed in 35.33 hours.
 
 ## Barcode demultiplexing
 
-As this is a 5x multiplexed sample I chose to use Ryan Wick's [Deepbinner](https://github.com/rrwick/Deepbinner) tool for demultiplexing. From the results in the Deepbinner [paper](https://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1006583), and from my own personal testing, Deepbinner saves a lot more reads from the dreaded "unkown" bin.
+As this is a 5x multiplexed sample I chose to use Ryan Wick's [Deepbinner](https://github.com/rrwick/Deepbinner) tool for demultiplexing. From the results in the Deepbinner [paper](https://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1006583), and from my own personal testing, Deepbinner saves a lot more reads from the dreaded "unknown" bin.
 
 ### Deepbinner classification
 ```sh
@@ -78,7 +78,7 @@ output=classification
 deepbinner classify --native "$fast5_dir" > "$output"
 ```
 
-I ran the deepbinner classificastion step on a GPU and it took 10 hours to classify all 1009917 reads - so approximately 1683 reads/min.
+I ran the deepbinner classification step on a GPU and it took 10 hours to classify all 1009917 reads - so approximately 1683 reads/min.
 
 ### Deepbinner binning
 
@@ -120,7 +120,7 @@ done
 Do the same thing for `Guppy_testing/flipflop`.
 
 ## Map
-Accuracy of the reads will be based on alignment to the reference genome. The alignment is done using [minimap2](https://github.com/lh3/minimap2).
+The accuracy of the reads will be based on alignment to the reference genome. The alignment is done using [minimap2](https://github.com/lh3/minimap2).
 
 ```sh
 cd Guppy_testing/normal
@@ -156,7 +156,7 @@ Do the same thing for `Guppy_testing/flipflop`.
 
 ## Quality vs Read length
 
-Probably the most startling thing for me initially was the Phred quality scores that the flip-flop algorithm was producing.
+Probably the most startling thing for me initially was the difference in Phred quality scores the two algorithms were producing.
 
 ![Pistis quality vs read length plot for default algorithm](/assets/img/posts/guppy/default_quality_vs_len.png)
 Figure 1: Guppy default basecalling algorithm quality vs read length. The y-axis shows the Phred quality score average for each read. The x-axis is the reads length in base pairs.
@@ -169,7 +169,7 @@ We can see from Figure 1 above that the Phred scores for the default algorithm a
 Figure 2: Guppy flip-flop basecalling algorithm quality vs read length. The y-axis shows the Phred quality score average for each read. The x-axis is the reads length in base pairs.
 {:.figure}
 
-As you can see, flip-flop seems to rate itself *very* highly. The most dense part of the kernel being around Phred score 42....yes, **42**.
+As you can see, flip-flop seems to rate itself *very* highly. The densest part of the kernel being around Phred score 42....yes, **42**.
 
 At the end of the day though, I don't generally pay much attention to the quality scores. I am more interested in how well the reads match what I expect them to, i.e the "truth". As I don't have an absolute truth for this particular dataset, I am going to use the [*M. tuberculosis* reference, NC_000962.3](https://www.ncbi.nlm.nih.gov/nuccore/NC_000962.3), as decent approximation. I know, it's not ideal, but it's the best I have access to at the moment.
 
@@ -231,14 +231,14 @@ p = p.set(title="GC content", ylabel="GC proportion per read (%)")
 ```
 
 ![GC content](/assets/img/posts/guppy/gc_content.png)
-Figure 4: GC content for each barcode calculated on a per read basis for both the default (blue) and flip-flop (orange) algorithms of Guppy.
+Figure 4: GC content for each barcode calculated on a per-read basis for both the default (blue) and flip-flop (orange) algorithms of Guppy.
 {:.figure}
 
-I plotted this many different ways and the distributions were nearly identitcal every way I looked at it. So I guess the flip-flop algorithm may have changed a bit since Keith looked at it, or potentially ONT has some *M. tuberculosis* in there training dataset?
+I plotted this many different ways and the distributions were nearly identical every way I looked at it. So I guess the flip-flop algorithm may have changed a bit since Keith looked at it, or potentially ONT has some *M. tuberculosis* in there training dataset?
 
 ## Read identity
 
-This is the plot I was most interested in. For me, this is the most important plot. How identitcal are the reads to the section of the reference they map to? As I mentioned already, we dont have absolute truth here, but it is a pretty close approximation. This metric is effectively asking for the reads that align (I ignore unmapped reads and secondary/supplementary alignments), how similar is the sequence to the reference at that location? I have cut off the axis at 50% to get a clearer view of the bulk of the distribution, but the tails extend past 50%.
+This is the plot I was most interested in. For me, this is the most important plot. How identical are the reads to the section of the reference they map to? As I mentioned already, we don't have absolute truth here, but it is a pretty close approximation. This metric is effectively asking for the reads that align (I ignore unmapped reads and secondary/supplementary alignments), how similar is the sequence to the reference at that location? I have cut off the axis at 50% to get a clearer view of the bulk of the distribution, but the tails extend past 50%.
 
 ```py
 sns.set_style("whitegrid")
@@ -257,7 +257,7 @@ Wow! That is a pretty good improvement. On average, flip-flop has about 2% highe
 
 ## Relative read length
 
-To see whether the algorithms are causing insertions and/or deletions we can look at the relative read length. That is, we take the length of the *aligned* part of the read and divide it by the length of the *aligned* part of the reference. Below 1.0 means there has been some deletions, above 1.0 means we've had some insertions - compared to the reference of course.
+To see whether the algorithms are causing insertions and/or deletions we can look at the relative read length. That is, we take the length of the *aligned* part of the read and divide it by the length of the *aligned* part of the reference. Below 1.0 means there have been some deletions, above 1.0 means we've had some insertions - compared to the reference of course.
 
 ```py
 sns.set_style("whitegrid")
@@ -272,13 +272,13 @@ _ = ax.set_ylim((0.75, 1.25))
 Figure 6: Relative read length for Guppy's default (blue) and flip-flop (orange) algorithms. Relative read length is calculated as the length of the aligned part of the read and divide it by the length of the aligned part of the reference.
 {:.figure}
 
-So it appears that flip-flop on average causes more deletions than insertions, but it definitely an improvement on the default algorithm. As we saw from the total yield plot, flip-flop produces more bases and the outcome of that, at least for *M. tuberculosis* in the case, is less deletions.
+So it appears that flip-flop on average causes more deletions than insertions, but it definitely an improvement on the default algorithm. As we saw from the total yield plot, flip-flop produces more bases and the outcome of that, at least for *M. tuberculosis* in the case, is fewer deletions.
 
 ---
 
 # Conclusions
 
-So in conclusion, for *M. tuberculosis* you can make a strong argument for using the flip-flop algorithm over the default. You get more accurate reads with less deletions. But the big caveat is time. Flip-flop is much slower than the default algorithm. At least on CPUs it is probably only feasible to use flip-flop if you have a compute cluster with at least 16 cores you can grab, unless you want to smash your laptop for a week or so. As I said earlier, I have not been able to run Guppy on GPUs yet, so I am interested to see how much faster flip-flop GPU is compared to the CPU version.
+So in conclusion, for *M. tuberculosis* you can make a strong argument for using the flip-flop algorithm over the default. You get more accurate reads with fewer deletions. But the big caveat is time. Flip-flop is much slower than the default algorithm. At least on CPUs, it is probably only feasible to use flip-flop if you have a computing cluster with at least 16 cores you can grab unless you want to smash your laptop for a week or so. As I said earlier, I have not been able to run Guppy on GPUs yet, so I am interested to see how much faster flip-flop GPU is compared to the CPU version.
 
 I hope someone finds this useful. And of course, if you have any problems with anything I have done please do get in touch.
 
@@ -298,8 +298,8 @@ def gc_content(sequence, as_decimal=True):
     """Returns the GC content for the sequence.
     Notes:
         This method ignores N when calculating the length of the sequence.
-        It does not, however ignore other ambiguous bases. It also only
-        includes the ambiguous base S (G or C). In this sense the method is
+        It does not however, ignore other ambiguous bases. It also only
+        includes the ambiguous base S (G or C). In this sense, the method is
         conservative with its calculation.
     Args:
         sequence (str): A DNA string.
