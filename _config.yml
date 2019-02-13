@@ -34,7 +34,7 @@ description:           >
 keywords:              [bioinformatics, genomics, bacteria, microbes]
 
 # Used by jekyll-seo-tag.
-logo:                  /assets/icons/icon.png
+logo:                  /assets/img/icons/bug.png
 
 # This should be the same author as first entry in `_data/authors.yml`.
 author:
@@ -70,7 +70,7 @@ paginate_path:         /page-:num/
 # ========================================================================================
 
 # Sidebar image and theme color of the site.
-accent_image:          bacteria.png
+accent_image:          /assets/img/bacteria.png
 accent_color:          rgb(79,177,186)
 
 # This is used for the `theme-color` meta tag,
@@ -119,7 +119,7 @@ google_analytics:      UA-133549196-1
 
 # Setting a disqus shortname will enable the comment section on
 # pages with `comments: true` in the front matter.
-disqus:                mbhall88
+# disqus:                mbhall88
 
 # Setting a tinyletter username will enable the newsletter subscription box.
 # PRO version only!
@@ -132,10 +132,10 @@ disqus:                mbhall88
 
 hydejack:
   # Configure the order of complementary content on blog posts
-  post_addons:         [about, newsletter, related]
+  post_addons:         [about, related]
 
   # Configure the order of complementary content on project pages
-  project_addons:      [about, newsletter, other]
+  project_addons:      [about, other]
 
   # If you do not use Google Fonts, set to `true`.
   no_google_fonts:     false
