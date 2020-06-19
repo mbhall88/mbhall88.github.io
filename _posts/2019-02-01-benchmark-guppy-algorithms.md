@@ -2,6 +2,7 @@
 layout: post
 title: "Benchmarking Guppy algorithms"
 date: 2019-02-01
+tags: [bioinformatics, nanopore, guppy, benchmark]
 ---
 
 * Methods
