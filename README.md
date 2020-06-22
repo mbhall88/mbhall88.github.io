@@ -1,1 +1,1 @@
-This repository is for my blog which can be found at https://mbhall88.github.io
+This repository is for my blog which can be found at https://mbh.sh
