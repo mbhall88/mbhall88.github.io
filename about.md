@@ -9,7 +9,7 @@ title: About
 # Write a short (~150 characters) description of each blog post.
 # This description is used to preview the page on search engines, social media, etc.
 description: >
-  My  name is Michael Hall and I am a Bioinformatics PhD student in Zam Iqbal's lab at EMBL-EBI. I currently work on using nanopore data and genome graphs to better call variation in bacterial genomes and to compare pan-genomes.
+  My  name is Michael Hall and I am a Bioinformatics postdoctoral researcher in Lachlan Coin's lab at the Peter Doherty Institute, The University of Melbourne. I currently work on using nanopore data and genome graphs to better call variation in bacterial genomes and to compare pan-genomes - with a specific interest in *Mycobacterium tuberculosis*.
 
 # You can show the description on the page by deleting this line:
 hide_description: true
