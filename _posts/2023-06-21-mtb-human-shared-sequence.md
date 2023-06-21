@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "Searching for shared sequence between *Mycobacterium tuberculosis* and *Homo sapiens*"
+title: "Searching for shared sequence between <em>Mycobacterium tuberculosis</em> and <em>Homo sapiens</em>"
 date: 2023-06-21
 tags: [bioinformatics, shared-sequence, kmers, tuberculosis, human]
 ---
