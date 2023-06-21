@@ -4,7 +4,7 @@
 # IMPORTANT: Set the URL of your site.
 # Set to https://<username>.github.io when hosting on GitHub Pages
 # (unless you are using a custom domain).
-url:                   https://mbhall88.github.io
+url:                   https://mbh.sh
 
 # IMPORTANT: Set The "base URL" of your site.
 # When your site sits in a subdirectory, set to /<name of directory>
@@ -43,7 +43,7 @@ author:
   email:               michael@mbh.sh
   picture:             https://avatars3.githubusercontent.com/u/20403931?s=400&u=d78be5d8f1771d05447b6b779d18ab78d801adf8&v=4
   # Used by `jekyll-seo-tag`:
-  twitter:             mbhall88
+  # twitter:             mbhall88
   github:              mbhall88
 
 # This text will appear in a `<small>` tag in the footer of every page.
@@ -248,8 +248,8 @@ remote_theme:          qwtel/hydejack@v8.1.1
 #   yandex:              <verification-id>
 
 # Used for Twitter cards
-twitter:
-  username:            mbhall88
+# twitter:
+#   username:            mbhall88
 
 # Used for Facebook open graph
 # facebook:
@@ -261,7 +261,6 @@ twitter:
 social:
   name:                Michael Hall
   links:
-    - https://twitter.com/mbhall88
     - https://github.com/mbhall88
 
 
