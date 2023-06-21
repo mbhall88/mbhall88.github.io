@@ -9,6 +9,7 @@ tags: [bioinformatics, shared-sequence, kmers, tuberculosis, human]
 
 # Table of Contents
 - [Motivation](#motivation)
+- [Shared *k*-mer content](#shared-k-mer-content)
 - [References](#references)
 
 
@@ -20,10 +21,10 @@ We are in the early stages of planning a *Mycobacterium tuberculosis* (MTB) anal
 
 The first thing I thought to check was whether there are shared *k*-mers between the two reference genomes for MTB and human. As an aside, after struggling to install/run multiple tools for this job I wrote a simple Rust program - [`skc`][skc] - to do this comparison.
 
-The human genome used is the [Telomere-to-Telomere (T2T) Consortium CHM13 v2.0 assembly][chm13v2] (accession: [GCA_009914755.4](https://www.ncbi.nlm.nih.gov/assembly/GCA_009914755.4))<sup>2</sup>. The MTB reference genome used is H37Rv (accession: [NC_000962.3](https://www.ncbi.nlm.nih.gov/nuccore/NC_000962.3))<sup>3</sup>. In addition to the CHM13 human genome, I also looked at the shared *k*-mer content between MTB and a collection of other closely- and distantly-related genomes to give some background expectations. The other genomes are:
+The human genome used is the [Telomere-to-Telomere (T2T) Consortium CHM13 v2.0 assembly][chm13v2] (accession: [GCA_009914755.4](https://www.ncbi.nlm.nih.gov/assembly/GCA_009914755.4))<sup>2</sup>. The MTB reference genome used is H37Rv (accession: [NC_000962.3](https://www.ncbi.nlm.nih.gov/nuccore/NC_000962.3))<sup>3</sup>. In addition to the CHM13 human genome, I looked at the shared *k*-mer content between MTB and a collection of other closely- and distantly-related genomes to give some background expectations. The other genomes are:
 
 - The previous human reference genome [GRCh38.p14 (hg38)](https://www.ncbi.nlm.nih.gov/assembly/GCF_000001405.40/)
-- The mouse (*Mus musculus*) reference genome [GRCm39 (mm39)](https://www.ncbi.nlm.nih.gov/assembly/GCF_000001635.27/)
+- The *Mus musculus* (mouse) reference genome [GRCm39 (mm39)](https://www.ncbi.nlm.nih.gov/assembly/GCF_000001635.27/)
 - The *Arabidopsis thaliana* (thale cress) reference genome [TAIR10.1](https://www.ncbi.nlm.nih.gov/assembly/GCF_000001735.4)
 - The Human immunodeficiency virus 1 (HIV-1) reference genome [NC_001802.1](https://www.ncbi.nlm.nih.gov/nuccore/NC_001802.1)
 - The *Escherichia coli* strain K-12 substr. MG1655 reference genome [ASM584v2](https://www.ncbi.nlm.nih.gov/assembly/GCF_000005845.2/)
