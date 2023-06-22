@@ -14,6 +14,7 @@ tags: [bioinformatics, shared-sequence, kmers, tuberculosis, human]
 - [Summary](#summary)
 - [References](#references)
 
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.8068147.svg)](https://doi.org/10.5281/zenodo.8068147)
 
 # Motivation
 
@@ -75,6 +76,11 @@ For my part, I'm pretty happy to conclude that aligning ONT sputum data to the h
 5. Li H. Minimap2: pairwise alignment for nucleotide sequences. Bioinformatics. 2018;34: 3094–3100. doi:[10.1093/bioinformatics/bty191](https://doi.org/10.1093/bioinformatics/bty191)
 6. Jain C, Rhie A, Hansen NF, Koren S, Phillippy AM. Long-read mapping to repetitive reference sequences using Winnowmap2. Nat Methods. 2022;19: 705–710. doi:[10.1038/s41592-022-01457-8](https://doi.org/10.1038/s41592-022-01457-8)
 7. Huang W, Li L, Myers JR, Marth GT. ART: a next-generation sequencing read simulator. Bioinformatics. 2012;28: 593–594. doi:[10.1093/bioinformatics/btr708](https://doi.org/10.1093/bioinformatics/btr708)
+
+You can cite this post as 
+
+Hall, Michael B. Searching for shared sequence between Mycobacterium tuberculosis and Homo sapiens. Zenodo; 2023. doi:[10.5281/zenodo.8068147](https://doi.org/10.5281/zenodo.8068146)
+
 
 [skc]: https://github.com/mbhall88/skc
 [chm13v2]: https://github.com/marbl/CHM13#t2t-chm13v20-t2t-chm13y
