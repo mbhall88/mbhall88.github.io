@@ -9,7 +9,7 @@ author1:
   # Used at the bottom of each page and at the top of the `about` layout
   # Markdown enabled, can use multiple paragraphs (enabled by `|`)
   about:             |
-    My name is Michael Hall and I'm a Bioinformatics postdoctoral researcher in [Lachlan Coin's lab](https://www.doherty.edu.au/people/professor-lachlan-coin#panel5) at the Peter Doherty Institute, The University of Melbourne. My work focuses on using nanopore data and genome graphs to better call variation and compare pan-genomes in bacteria - with a specific interest in *Mycobacterium tuberculosis*.
+    My name is Michael Hall and I'm a Bioinformatics postdoctoral researcher in [Lachlan Coin's lab](https://www.doherty.edu.au/people/professor-lachlan-coin#panel5) at [the Peter Doherty Institute, The University of Melbourne](https://www.doherty.edu.au/). My work focuses on using nanopore data and genome graphs to better call variation and compare pan-genomes in bacteria - with a specific interest in *Mycobacterium tuberculosis*.
 
   # This photo will be used in the about section.
   picture:
