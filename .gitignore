@@ -43,3 +43,5 @@ _site
 
 # Superpowers worktrees
 .worktrees/
+/public/
+.hugo_build.lock
