@@ -1,0 +1,22 @@
+baseURL = 'https://mbhall88.github.io/'
+title = 'Microbes made me do it'
+theme = 'hugo-blox-builder'
+
+[params]
+  description = 'Posts about microbes, genomics, bioinformatics, and anything else relevant (or not) to my research.'
+  # GoatCounter Analytics
+  [params.marketing.analytics]
+    goatcounter = 'mbhall88'
+  # Giscus Comments
+  [params.features.comment]
+    provider = 'giscus'
+    [params.features.comment.giscus]
+      repo = 'mbhall88/mbhall88.github.io'
+      repo_id = '' # To be filled later
+      category = 'Announcements'
+      category_id = '' # To be filled later
+      mapping = 'pathname'
+      strict = true
+      reactions_enabled = true
+      emit_metadata = false
+      theme = 'preferred_color_scheme'
