@@ -40,3 +40,6 @@ _site
 # Bundler
 /.bundle
 /vendor/bundle
+
+# Superpowers worktrees
+.worktrees/
