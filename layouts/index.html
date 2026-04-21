@@ -1,0 +1,27 @@
+{{- define "main" }}
+<main class="main">
+{{- if .Site.Params.profileMode.enabled }}
+{{- partial "index_profile.html" . }}
+{{- end }}
+
+{{- /* Inject GitHub Stats here */ -}}
+<div class="github-stats-container" style="text-align: center; margin-top: 2rem; padding: 1rem; border-top: 1px solid var(--tertiary);">
+    <h3>Open Source Contributions</h3>
+    <p style="margin-top: 0.5rem; color: var(--secondary);">
+        <b>Public Repositories:</b> 65 &nbsp;·&nbsp;
+        <b>Followers:</b> 80
+    </p>
+    <p style="font-size: 0.8em; color: var(--tertiary);">
+        <a href="https://github.com/mbhall88">View my work on GitHub</a>
+    </p>
+</div>
+
+{{- if not .Site.Params.profileMode.enabled }}
+{{- /* Fallback for non-profile mode */ -}}
+<div class="profile">
+    <h1>{{ .Title }}</h1>
+    {{ .Content }}
+</div>
+{{- end }}
+</main>
+{{- end }}
