@@ -1,7 +1,3 @@
-install:
-    pnpm install
-    hugo mod tidy
-
 serve:
     hugo server -D
 
