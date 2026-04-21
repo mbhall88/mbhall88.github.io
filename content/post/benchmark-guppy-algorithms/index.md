@@ -167,14 +167,14 @@ Do the same thing for `Guppy_testing/flipflop`.
 
 Probably the most startling thing for me initially was the difference in Phred quality scores the two algorithms were producing.
 
-![Pistis quality vs read length plot for default algorithm](/assets/img/posts/guppy/default_quality_vs_len.png)
+![Pistis quality vs read length plot for default algorithm](default_quality_vs_len.png)
 Figure 1: Guppy default basecalling algorithm quality vs read length. The y-axis shows the Phred quality score average for each read. The x-axis is the reads length in base pairs.
 {:.figure}
 
 We can see from Figure 1 above that the Phred scores for the default algorithm are centred around 14. However, when we look at the same plot for the flip-flop algorithm (Figure 2), we see a very different story in terms of quality scores.
 
 
-![Pistis quality vs read length plot for flip-flop algorithm](/assets/img/posts/guppy/flipflop_quality_vs_len.png)
+![Pistis quality vs read length plot for flip-flop algorithm](flipflop_quality_vs_len.png)
 Figure 2: Guppy flip-flop basecalling algorithm quality vs read length. The y-axis shows the Phred quality score average for each read. The x-axis is the reads length in base pairs.
 {:.figure}
 
@@ -221,7 +221,7 @@ p = sns.barplot(data=yield_df, x="barcode", y="aligned_bases",
 p = p.set(title="Total yield", ylabel="aligned bases (bp)")
 ```
 
-![Total Yield](/assets/img/posts/guppy/total_yield.png)
+![Total Yield](total_yield.png)
 Figure 3: Total number of bases produced by the Guppy default (blue) and flip-flop (orange) algorithms for each barcode.
 {:.figure}
 
@@ -239,7 +239,7 @@ p = sns.violinplot(x='barcode', y='gc_content', data=df, split=True, inner="quar
 p = p.set(title="GC content", ylabel="GC proportion per read (%)")
 ```
 
-![GC content](/assets/img/posts/guppy/gc_content.png)
+![GC content](gc_content.png)
 Figure 4: GC content for each barcode calculated on a per-read basis for both the default (blue) and flip-flop (orange) algorithms of Guppy.
 {:.figure}
 
@@ -258,7 +258,7 @@ p = p.set(title="Read identity", ylabel="Read percent identity (%)")
 _ = ax.set_xlim((50, 100))
 _ = plt.legend(loc='lower right')
 ```
-![Read percent identity](/assets/img/posts/guppy/pid.png)
+![Read percent identity](pid.png)
 Figure 5: Read percent identity for primary alignments to the  M. tuberculosis reference, NC_000962.3. Blue shows the default algorithm for Guppy and orange shows the flip-flop algorithm. The dashed lines within the violins show the percentiles of the data.
 {:.figure}
 
@@ -277,7 +277,7 @@ p = p.set(title="Relative read length", ylabel="read alignment length / ref alig
 _ = ax.set_ylim((0.75, 1.25))
 ```
 
-![Relative read length](/assets/img/posts/guppy/rel_len.png)
+![Relative read length](rel_len.png)
 Figure 6: Relative read length for Guppy's default (blue) and flip-flop (orange) algorithms. Relative read length is calculated as the length of the aligned part of the read and divide it by the length of the aligned part of the reference.
 {:.figure}
 

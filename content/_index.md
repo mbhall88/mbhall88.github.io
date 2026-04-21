@@ -38,11 +38,9 @@ sections:
       title: '📚 My Research'
       subtitle: ''
       text: |-
-        Use this area to speak to your mission. I'm a research scientist in the Moonshot team at DeepMind. I blog about machine learning, deep learning, and moonshots.
+        Welcome to my blog! I'm a Bioinformatics postdoctoral researcher at the UQCCR/Frazer Institute. I apply computational methods to long-read sequencing data, specifically Oxford Nanopore Technologies (ONT), to investigate microbial genomics, plasmid assembly, and antimicrobial resistance mechanisms.
 
-        I apply a range of qualitative and quantitative methods to comprehensively investigate the role of science and technology in the economy.
-
-        Please reach out to collaborate 😃
+        This site hosts my blog posts on bioinformatics, genomics, and tool development. Please reach out to collaborate 😃
     design:
       columns: '1'
   - block: collection
