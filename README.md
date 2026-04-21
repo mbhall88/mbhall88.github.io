@@ -1,6 +1,6 @@
 # mbhall88.github.io
 
-Bioinformatics blog and portfolio for Michael Hall.
+Bioinformatics blog and portfolio for Michael Hall. Built with [Hugo](https://gohugo.io/) and the [PaperMod](https://github.com/adityatelange/hugo-PaperMod) theme.
 
 ## Workflows
 
@@ -9,30 +9,25 @@ Use the `Justfile` to scaffold a new post bundle:
 ```bash
 just new-post my-exciting-research
 ```
-This creates `content/post/my-exciting-research/index.md`. You can place scripts, data, and images directly in that folder.
+This creates a new folder `content/post/my-exciting-research/index.md`. You can place images, scripts, and data files directly in that folder (Page Bundles).
 
 ### 2. Local Development
 ```bash
 just serve
 ```
-Visit `localhost:1313`.
+Visit `http://localhost:1313`.
 
-### 3. Publications & Data Sync
-```bash
-just sync-all
-```
-This updates `data/github_stats.json` and scaffolds `content/publication/`.
+### 3. Dynamic Stats & Metrics
+- **Software Impact:** The homepage automatically fetches live download counts for **Rasusa** from Crates.io, Bioconda, and GitHub Releases.
+- **GitHub Stats:** Real-time stars, followers, and primary language (weighted by stars) are fetched directly from the GitHub API on page load.
+- **View Counts:** Individual posts display live view counts via [GoatCounter](https://mbhall88.goatcounter.com).
 
 ### 4. CI/CD & Automation
-- **GitHub Actions:** Automatically builds and deploys to GitHub Pages on every push to `main`.
-- **Zenodo DOI:** A custom GitHub Action (work in progress) handles zipping post bundles and minting DOIs on Zenodo to make your research citeable.
-
-### 5. Analytics & Comments
-- **Analytics:** Powered by [GoatCounter](https://mbhall88.goatcounter.com). Dashboard is public.
-- **Comments:** Powered by [giscus](https://giscus.app) via GitHub Discussions.
+- **GitHub Actions:** Automatically builds and deploys to GitHub Pages on every push to the `master` branch.
+- **Commenting:** Powered by [giscus](https://giscus.app) via GitHub Discussions.
 
 ## Structure
 - `content/post/`: Individual blog posts as page bundles.
-- `content/publication/`: Research publications.
-- `scripts/`: Python scripts for data sync and Zenodo automation.
+- `layouts/`: Custom overrides for the PaperMod theme (homepage stats, view counts).
+- `static/`: Static assets like your CV (`cv.pdf`).
 - `Justfile`: Task runner for local development.
