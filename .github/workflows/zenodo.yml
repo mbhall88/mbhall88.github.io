@@ -1,0 +1,85 @@
+name: Mint Zenodo DOI for new posts
+on:
+  push:
+    tags:
+      - 'publish/**'
+
+jobs:
+  mint-doi:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write # Needed to commit the DOI back to the repo
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Full history needed to commit back
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: pip install requests pyyaml
+
+      - name: Extract post name and run script
+        id: zenodo
+        env:
+          ZENODO_TOKEN: ${{ secrets.ZENODO_TOKEN }}
+        run: |
+          # Get post name from tag (e.g. publish/my-post -> my-post)
+          TAG_NAME=${GITHUB_REF#refs/tags/}
+          POST_NAME=${TAG_NAME#publish/}
+          POST_PATH="content/post/$POST_NAME"
+          
+          if [ ! -d "$POST_PATH" ]; then
+            echo "Error: Directory $POST_PATH not found."
+            exit 1
+          fi
+
+          echo "Minting DOI for $POST_PATH..."
+          OUTPUT=$(python scripts/zenodo_doi.py "$POST_PATH")
+          echo "$OUTPUT"
+          
+          # Extract DOI from output
+          DOI=$(echo "$OUTPUT" | grep 'RESULT_DOI=' | cut -d= -f2)
+          if [ -z "$DOI" ]; then
+            echo "Error: DOI was not minted."
+            exit 1
+          fi
+          echo "doi=$DOI" >> $GITHUB_OUTPUT
+          echo "path=$POST_PATH" >> $GITHUB_OUTPUT
+
+      - name: Update Post Frontmatter
+        run: |
+          DOI="${{ steps.zenodo.outputs.doi }}"
+          FILE="${{ steps.zenodo.outputs.path }}/index.md"
+          
+          # Use Python to safely update YAML frontmatter
+          python3 -c "
+          import sys, yaml, re
+          with open('$FILE', 'r') as f:
+              content = f.read()
+          
+          match = re.match(r'^---(.*?)---(.*)', content, re.DOTALL)
+          if match:
+              frontmatter = yaml.safe_load(match.group(1))
+              body = match.group(2)
+              frontmatter['doi'] = '$DOI'
+              # Also set draft to false when published
+              frontmatter['draft'] = False
+              
+              with open('$FILE', 'w') as f:
+                  f.write('---\n')
+                  yaml.dump(frontmatter, f, default_flow_style=False)
+                  f.write('---\n')
+                  f.write(body)
+          "
+
+      - name: Commit and Push
+        run: |
+          git config --global user.name "Zenodo Bot"
+          git config --global user.email "actions@github.com"
+          git add ${{ steps.zenodo.outputs.path }}/index.md
+          git commit -m "chore: add DOI ${{ steps.zenodo.outputs.doi }} to ${{ steps.zenodo.outputs.path }}"
+          git push origin master

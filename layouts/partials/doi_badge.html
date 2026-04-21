@@ -1,0 +1,7 @@
+{{- if .Params.doi -}}
+<div class="doi-badge" style="margin-bottom: 1rem;">
+    <a href="https://doi.org/{{ .Params.doi }}" target="_blank" rel="noopener noreferrer">
+        <img src="https://img.shields.io/badge/DOI-{{ .Params.doi }}-blue.svg" alt="DOI: {{ .Params.doi }}">
+    </a>
+</div>
+{{- end -}}

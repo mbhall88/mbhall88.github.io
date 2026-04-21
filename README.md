@@ -24,9 +24,17 @@ Visit `http://localhost:1313`.
 
 ### 4. CI/CD & Automation
 - **GitHub Actions:** Automatically builds and deploys to GitHub Pages on every push to the `master` branch.
+- **Zenodo DOI Automation:** When a post is finalized, run `just publish <post-title>`. This creates a git tag that triggers a GitHub Action to:
+  1. Zip the complete post folder (including scripts and data).
+  2. Upload the bundle to Zenodo and formally publish it.
+  3. Commit the resulting DOI back to your post's frontmatter.
 - **Commenting:** Powered by [giscus](https://giscus.app) via GitHub Discussions.
 
-## Structure
+## Configuration
+To enable **Zenodo DOI automation**, you must:
+1. Generate a Personal Access Token on [Zenodo](https://zenodo.org/account/settings/applications/).
+2. Add it as a repository secret named `ZENODO_TOKEN` in your GitHub repository settings.
+
 - `content/post/`: Individual blog posts as page bundles.
 - `layouts/`: Custom overrides for the PaperMod theme (homepage stats, view counts).
 - `static/`: Static assets like your CV (`cv.pdf`).
