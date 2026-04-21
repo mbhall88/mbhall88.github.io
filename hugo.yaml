@@ -3,14 +3,12 @@ title: "Microbes made me do it"
 theme: "PaperMod"
 languageCode: "en-us"
 
-# Ensure images aren't aggressively processed or hidden
 params:
   env: production
   author: "Michael Hall"
   defaultTheme: auto
   disableThemeToggle: false
   
-  # Profile Mode Homepage
   profileMode:
     enabled: true
     title: "Michael Hall"
@@ -19,20 +17,25 @@ params:
     imageWidth: 120
     imageHeight: 120
     buttons:
-      - name: Publications
-        url: /publications/
       - name: Posts
         url: /post/
       - name: GitHub
         url: https://github.com/mbhall88
+      - name: CV
+        url: /cv.pdf
   
   socialIcons:
     - name: github
       url: "https://github.com/mbhall88"
     - name: orcid
       url: "https://orcid.org/0000-0003-3683-6208"
+    - name: googlescholar
+      url: "https://scholar.google.com/citations?user=UPv5JGEAAAAJ&hl=en"
+    - name: linkedin
+      url: "https://www.linkedin.com/in/michael-hall-2b1bb9118/"
+    - name: bluesky
+      url: "https://bsky.app/profile/mbhall88.bsky.social"
 
-  # GoatCounter Analytics
   analytics:
     goatcounter:
       Site: "mbhall88"
@@ -41,7 +44,7 @@ params:
   comments:
     giscus:
       repo: "mbhall88/mbhall88.github.io"
-      repoId: "" # Fill if known
+      repoId: "" 
       category: "Announcements"
       categoryId: ""
       mapping: "pathname"
@@ -56,10 +59,6 @@ menu:
       name: Posts
       url: /post/
       weight: 10
-    - identifier: publications
-      name: Publications
-      url: /publications/
-      weight: 20
 
 markup:
   goldmark:
