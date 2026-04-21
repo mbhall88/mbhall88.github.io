@@ -2,6 +2,11 @@ baseURL = 'https://mbhall88.github.io/'
 title = 'Microbes made me do it'
 theme = 'hugo-blox-builder'
 
+[markup]
+  [markup.goldmark]
+    [markup.goldmark.renderer]
+      unsafe = true
+
 [params]
   description = 'Posts about microbes, genomics, bioinformatics, and anything else relevant (or not) to my research.'
   # GoatCounter Analytics
