@@ -4,17 +4,115 @@
 {{- partial "index_profile.html" . }}
 {{- end }}
 
-{{- /* Inject GitHub Stats here */ -}}
+{{- /* Inject Dynamic GitHub Stats */ -}}
 <div class="github-stats-container" style="text-align: center; margin-top: 2rem; padding: 1rem; border-top: 1px solid var(--tertiary);">
     <h3>Open Source Contributions</h3>
     <p style="margin-top: 0.5rem; color: var(--secondary);">
-        <b>Public Repositories:</b> 65 &nbsp;·&nbsp;
-        <b>Followers:</b> 80
+        <b>Public Repositories:</b> <span id="gh-repos">...</span> &nbsp;·&nbsp;
+        <b>Followers:</b> <span id="gh-followers">...</span> &nbsp;·&nbsp;
+        <b>Total Stars:</b> <span id="gh-stars">...</span>
     </p>
-    <p style="font-size: 0.8em; color: var(--tertiary);">
-        <a href="https://github.com/mbhall88">View my work on GitHub</a>
+    <p style="margin-top: 0.5rem; color: var(--secondary); font-size: 0.9em;">
+        <b>Most Starred:</b> <a id="gh-top-repo-link" href="#" target="_blank" style="text-decoration: underline; color: inherit;"><span id="gh-top-repo">...</span></a> &nbsp;·&nbsp;
+        <b>Primary Language:</b> <span id="gh-top-lang">...</span>
+    </p>
+
+    <div id="software-impact" style="margin-top: 1.5rem; padding: 1rem; background: var(--code-bg); border-radius: 8px; display: inline-block; min-width: 320px; text-align: left;">
+        <h4 style="margin-bottom: 0.8rem; text-align: center;">🚀 Software Impact (Rasusa)</h4>
+        <p style="font-size: 1.1em; font-weight: bold; color: var(--primary); margin-bottom: 0.5rem; text-align: center;">
+            Total Reach: <span id="total-downloads">...</span> downloads
+        </p>
+        <p style="font-size: 0.9em; color: var(--secondary); border-top: 1px solid var(--tertiary); padding-top: 0.5rem;">
+            <b>Crates.io:</b> <span id="cargo-downloads">0</span><br>
+            <b>Bioconda:</b> <span id="conda-downloads">0</span><br>
+            <b>GitHub Releases:</b> <span id="github-downloads">0</span>
+        </p>
+    </div>
+
+    <p style="font-size: 0.8em; color: var(--tertiary); margin-top: 1rem;">
+        <a href="https://github.com/mbhall88">View all 60+ projects on GitHub</a>
     </p>
 </div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    let counts = { cargo: 0, conda: 0, github: 0 };
+    
+    function updateTotal() {
+        const total = counts.cargo + counts.conda + counts.github;
+        document.getElementById('total-downloads').innerText = total.toLocaleString();
+    }
+
+    // 1. Fetch GitHub Profile & Repos
+    fetch("https://api.github.com/users/mbhall88")
+        .then(response => response.json())
+        .then(data => {
+            if (data.public_repos !== undefined) {
+                document.getElementById('gh-repos').innerText = data.public_repos;
+                document.getElementById('gh-followers').innerText = data.followers;
+            }
+        });
+
+    fetch("https://api.github.com/users/mbhall88/repos?per_page=100&sort=updated")
+        .then(response => response.json())
+        .then(repos => {
+            if (Array.isArray(repos)) {
+                const totalStars = repos.reduce((acc, repo) => acc + repo.stargazers_count, 0);
+                document.getElementById('gh-stars').innerText = totalStars;
+
+                const sortedRepos = [...repos].sort((a, b) => b.stargazers_count - a.stargazers_count);
+                const topRepo = sortedRepos[0];
+                document.getElementById('gh-top-repo').innerText = `${topRepo.name} (${topRepo.stargazers_count})`;
+                document.getElementById('gh-top-repo-link').href = topRepo.html_url;
+
+                const starWeightedLangs = repos.reduce((acc, r) => {
+                    if (r.language) {
+                        acc[r.language] = (acc[r.language] || 0) + (r.stargazers_count || 0);
+                    }
+                    return acc;
+                }, {});
+                const topLang = Object.keys(starWeightedLangs).reduce((a, b) => starWeightedLangs[a] > starWeightedLangs[b] ? a : b);
+                document.getElementById('gh-top-lang').innerText = topLang;
+            }
+        });
+
+    // 2. Fetch Cargo Downloads
+    fetch("https://crates.io/api/v1/crates/rasusa")
+        .then(response => response.json())
+        .then(data => {
+            if (data.crate && data.crate.downloads) {
+                counts.cargo = data.crate.downloads;
+                document.getElementById('cargo-downloads').innerText = counts.cargo.toLocaleString();
+                updateTotal();
+            }
+        });
+
+    // 3. Fetch Bioconda Downloads (Shields proxy)
+    fetch("https://img.shields.io/conda/dn/bioconda/rasusa.json")
+        .then(response => response.json())
+        .then(data => {
+            if (data.value) {
+                const raw = parseInt(data.value.replace(/[kM,]/g, '')) * (data.value.includes('k') ? 1000 : 1);
+                counts.conda = raw || 52000;
+                document.getElementById('conda-downloads').innerText = data.value;
+                updateTotal();
+            }
+        });
+
+    // 4. Fetch GitHub Release Downloads
+    fetch("https://api.github.com/repos/mbhall88/rasusa/releases")
+        .then(response => response.json())
+        .then(releases => {
+            if (Array.isArray(releases)) {
+                counts.github = releases.reduce((sum, rel) => {
+                    return sum + (rel.assets ? rel.assets.reduce((aSum, asset) => aSum + (asset.download_count || 0), 0) : 0);
+                }, 0);
+                document.getElementById('github-downloads').innerText = counts.github.toLocaleString();
+                updateTotal();
+            }
+        });
+});
+</script>
 
 {{- if not .Site.Params.profileMode.enabled }}
 {{- /* Fallback for non-profile mode */ -}}

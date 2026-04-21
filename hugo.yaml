@@ -1,7 +1,7 @@
 baseURL: "https://mbhall88.github.io/"
 title: "Microbes made me do it"
 theme: "PaperMod"
-languageCode: "en-us"
+languageCode: "en-au"
 
 params:
   env: production
@@ -12,7 +12,7 @@ params:
   profileMode:
     enabled: true
     title: "Michael Hall"
-    subtitle: "Bioinformatics postdoctoral researcher at UQCCR/Frazer Institute. I apply computational methods to long-read sequencing data (ONT) to investigate microbial genomics, plasmid assembly, and antimicrobial resistance mechanisms."
+    subtitle: "Bioinformatics postdoctoral researcher at the University of Queensland's Frazer Institute. I apply computational methods to long-read sequencing data (ONT) to investigate microbial genomics, plasmid assembly, and antimicrobial resistance mechanisms. I'm also an active maintainer and developer of many open-source bioinformatics tools."
     imageUrl: "https://avatars.githubusercontent.com/u/20403931?v=4"
     imageWidth: 120
     imageHeight: 120
@@ -44,9 +44,9 @@ params:
   comments:
     giscus:
       repo: "mbhall88/mbhall88.github.io"
-      repoId: "" 
+      repoId: "MDEwOlJlcG9zaXRvcnkxNjg1NjkwOTQ=" 
       category: "Announcements"
-      categoryId: ""
+      categoryId: "DIC_kwDOCgwpBs4C7RAH"
       mapping: "pathname"
       strict: true
       reactionsEnabled: true
