@@ -2,7 +2,7 @@ baseURL: "https://mbhall88.github.io/"
 title: "Microbes made me do it"
 theme: "PaperMod"
 languageCode: "en-au"
-
+ignoreFiles: ["README.md"]
 params:
   env: production
   author: "Michael Hall"
