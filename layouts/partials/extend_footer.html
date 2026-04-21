@@ -1,0 +1,17 @@
+{{- if and .Site.Params.analytics.goatcounter .IsPage (eq .Type "post") -}}
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    var path = window.location.pathname;
+    var url = "https://mbhall88.goatcounter.com/counter/" + encodeURIComponent(path) + ".json";
+    fetch(url)
+        .then(response => response.json())
+        .then(data => {
+            var statsEl = document.getElementById('stats-' + path);
+            if (statsEl && data.count) {
+                statsEl.innerText = data.count + " views";
+            }
+        })
+        .catch(err => console.error("Error fetching GoatCounter stats:", err));
+});
+</script>
+{{- end -}}
