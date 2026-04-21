@@ -6,7 +6,7 @@ import re
 
 def sync_pubs():
     print("Syncing publications from ORCID...")
-    os.makedirs('content/publications', exist_ok=True)
+    os.makedirs('content', exist_ok=True)
     
     orcid = "0000-0003-3683-6208"
     url = f"https://pub.orcid.org/v3.0/{orcid}/works"
@@ -16,78 +16,46 @@ def sync_pubs():
         response = requests.get(url, headers=headers)
         response.raise_for_status()
         data = response.json()
-        
         seen_titles = set()
+        pubs = []
         
-        # Get groups and sort by year (descending) if available
-        groups = data.get('group', [])
-        
-        pubs_to_process = []
-        for group in groups:
+        for group in data.get('group', []):
             summary = group['work-summary'][0]
-            title = summary.get('title', {}).get('title', {}).get('value', 'Unknown Title')
-            
-            # Normalize title to check for duplicates
-            norm_title = re.sub(r'[^a-z0-9]', '', title.lower())
-            if norm_title in seen_titles:
+            work_type = summary.get('type', '')
+            if work_type not in ['journal-article', 'preprint']:
                 continue
-            seen_titles.add(norm_title)
-            
-            pub_date = summary.get('publication-date', {})
-            if pub_date:
-                year = pub_date.get('year', {}).get('value', '2023') if pub_date.get('year') else '2023'
-                month = pub_date.get('month', {}).get('value', '01') if pub_date.get('month') else '01'
-                day = pub_date.get('day', {}).get('value', '01') if pub_date.get('day') else '01'
-            else:
-                year, month, day = '2023', '01', '01'
                 
-            journal = summary.get('journal-title', {}).get('value', '') if summary.get('journal-title') else 'Unknown Venue'
+            title = summary.get('title', {}).get('title', {}).get('value', 'Unknown')
+            norm = re.sub(r'[^a-z0-9]', '', title.lower())
+            if norm in seen_titles: continue
+            seen_titles.add(norm)
             
-            pubs_to_process.append({
-                'title': title,
-                'year': year,
-                'month': month,
-                'day': day,
-                'venue': journal,
-                'abstract': '' # ORCID summary doesn't always have abstract easily
-            })
+            pd = summary.get('publication-date', {})
+            year = pd.get('year', {}).get('value', '2023') if pd else '2023'
+            venue = summary.get('journal-title', {}).get('value', 'Unknown Venue') if summary.get('journal-title') else 'Unknown Venue'
             
-        # Sort descending
-        pubs_to_process.sort(key=lambda x: (x['year'], x['month'], x['day']), reverse=True)
+            # ORCID external IDs (DOI)
+            doi = ""
+            if summary.get('external-ids') and summary['external-ids'].get('external-id'):
+                for ext in summary['external-ids']['external-id']:
+                    if ext['external-id-type'] == 'doi':
+                        doi = ext['external-id-value']
+                        break
+            
+            pubs.append({'year': year, 'title': title, 'venue': venue, 'doi': doi, 'type': work_type})
+            
+        pubs.sort(key=lambda x: x['year'], reverse=True)
         
-        for pub in pubs_to_process[:15]: # Keep top 15
-            title = pub['title']
-            year = pub['year']
-            month = pub['month']
-            day = pub['day']
-            venue = pub['venue']
-            
-            safe_title = "".join([c if c.isalnum() else "-" for c in title.lower()])
-            safe_title = "-".join(filter(None, safe_title.split("-")))[:50]
-            
-            pub_dir = f"content/publications/{safe_title}"
-            os.makedirs(pub_dir, exist_ok=True)
-            
-            index_path = os.path.join(pub_dir, "index.md")
-            with open(index_path, "w", encoding="utf-8") as f:
-                f.write("---\n")
-                clean_title = title.replace('"', '')
-                f.write(f"title: \"{clean_title}\"\n")
-                f.write(f"date: {year}-{month}-{day}\n")
-                f.write(f"publishDate: {year}-{month}-{day}\n")
-                f.write("authors:\n- \"admin\"\n")
-                
-                clean_venue = venue.replace('"', '')
-                if clean_venue:
-                    f.write(f"publication: \"{clean_venue}\"\n")
-                
-                f.write("abstract: \"\"\n")
-                f.write("---\n")
-                
-            print(f"Added publication: {title}")
-
+        with open('content/publications.md', 'w', encoding='utf-8') as f:
+            f.write("---\ntitle: \"Publications\"\nlayout: \"archives\"\n---\n\n")
+            f.write("A list of my research publications, automatically synced from my [ORCID](https://orcid.org/0000-0003-3683-6208).\n\n")
+            for p in pubs[:20]:
+                doi_link = f" [DOI: {p['doi']}](https://doi.org/{p['doi']})" if p['doi'] else ""
+                type_badge = " *(Preprint)*" if p['type'] == 'preprint' else ""
+                f.write(f"- **{p['title']}** ({p['year']}) - *{p['venue']}*{type_badge}{doi_link}\n")
+        print("Updated content/publications.md")
     except Exception as e:
-        print(f"Failed to fetch publications: {e}")
+        print(f"Error: {e}")
 
 def sync_github():
     print("Syncing GitHub stats...")
