@@ -35,6 +35,11 @@ params:
       url: "https://www.linkedin.com/in/michael-hall-2b1bb9118/"
     - name: bluesky
       url: "https://bsky.app/profile/mbhall88.bsky.social"
+    - name: rss
+      url: "/index.xml"
+
+  # RSS Feed Configuration
+  rssFullText: true
 
   analytics:
     goatcounter:
