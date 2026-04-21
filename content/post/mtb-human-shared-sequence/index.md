@@ -1,6 +1,4 @@
 ---
-authors:
-- admin
 date: '2023-06-21T00:00:00Z'
 tags:
 - bioinformatics
