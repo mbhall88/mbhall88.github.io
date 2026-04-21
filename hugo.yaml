@@ -1,0 +1,67 @@
+baseURL: "https://mbhall88.github.io/"
+title: "Microbes made me do it"
+theme: "PaperMod"
+languageCode: "en-us"
+
+# Ensure images aren't aggressively processed or hidden
+params:
+  env: production
+  author: "Michael Hall"
+  defaultTheme: auto
+  disableThemeToggle: false
+  
+  # Profile Mode Homepage
+  profileMode:
+    enabled: true
+    title: "Michael Hall"
+    subtitle: "Bioinformatics postdoctoral researcher at UQCCR/Frazer Institute. I apply computational methods to long-read sequencing data (ONT) to investigate microbial genomics, plasmid assembly, and antimicrobial resistance mechanisms."
+    imageUrl: "https://avatars.githubusercontent.com/u/20403931?v=4"
+    imageWidth: 120
+    imageHeight: 120
+    buttons:
+      - name: Publications
+        url: /publications/
+      - name: Posts
+        url: /post/
+      - name: GitHub
+        url: https://github.com/mbhall88
+  
+  socialIcons:
+    - name: github
+      url: "https://github.com/mbhall88"
+    - name: orcid
+      url: "https://orcid.org/0000-0003-3683-6208"
+
+  # GoatCounter Analytics
+  analytics:
+    goatcounter:
+      Site: "mbhall88"
+      
+  # Giscus Comments
+  comments:
+    giscus:
+      repo: "mbhall88/mbhall88.github.io"
+      repoId: "" # Fill if known
+      category: "Announcements"
+      categoryId: ""
+      mapping: "pathname"
+      strict: true
+      reactionsEnabled: true
+      emitMetadata: false
+      theme: "preferred_color_scheme"
+
+menu:
+  main:
+    - identifier: posts
+      name: Posts
+      url: /post/
+      weight: 10
+    - identifier: publications
+      name: Publications
+      url: /publications/
+      weight: 20
+
+markup:
+  goldmark:
+    renderer:
+      unsafe: true
