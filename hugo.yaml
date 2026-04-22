@@ -8,7 +8,14 @@ params:
   author: "Michael Hall"
   defaultTheme: auto
   disableThemeToggle: false
-  
+  ShowCodeCopyButtons: true
+  math: true
+
+  editPost:
+    URL: "https://github.com/mbhall88/mbhall88.github.io/tree/master/content"
+    Text: "Suggest Changes" # edit text
+    appendFilePath: true # to append file path to Edit link
+
   profileMode:
     enabled: true
     title: "Michael Hall"
@@ -69,3 +76,17 @@ markup:
   goldmark:
     renderer:
       unsafe: true
+    extensions:
+      passthrough:
+        enable: true
+        delimiters:
+          block:
+          - - '$$'
+            - '$$'
+          - - '\['
+            - '\]'
+          inline:
+          - - '$'
+            - '$'
+          - - '\('
+            - '\)'
