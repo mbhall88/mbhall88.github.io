@@ -1,4 +1,4 @@
-{{- if .Params.math -}}
+{{- if or .Params.math .Site.Params.math -}}
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" integrity="sha384-n9CRH5iSC0H6nzas6Gat5q4f6Y5Z9e4hYisuC4ZtN6W95/f9v2t5vS0v" crossorigin="anonymous">
 <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" integrity="sha384-7zk9W8qN5K07mP+A1WJ9U9T3m5O8R9/H/vX5zV/5t4H5S5v7X3n8Xv5/X5v7X3" crossorigin="anonymous"></script>
 <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" integrity="sha384-43gviUU0Wof8Baf6LpP8yYm8N6rE3n8R6r5Xv7X3n8Xv5/X5v7X3" crossorigin="anonymous"
