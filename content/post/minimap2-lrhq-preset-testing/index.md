@@ -1,8 +1,7 @@
 ---
 title: Minimap2 lr:hq preset testing
 date: 2026-04-22T14:16:33+10:00
-draft: false
-math: true
+draft: true
 tags:
   - minimap2
   - alignment
@@ -66,20 +65,9 @@ Across the board, `lr:hq` is a *marginal* improvement. For SNPs, the F1 Q-score 
 
 When looking at the improvement given by `lr:hq` on SNPs, we see that for `hac`, the higher F1 score is driven solely by a small increase in precision (0.002%), with recall remaining the same. In contrast, for `sup`, the higher SNP F1 score comes from a 0.01% increase in the recall. Though there was a *very* small decrease in precision (0.001%).
 
-Indels are a little more clear cut. For both `hac` and `sup` there is an increase in both precision and recall.
+Indels are a little more clear cut. For both `hac` and `sup` there is an increase in both precision and recall. These results can visualised in Figure 1 (F1 scores) below and Figures S1 (precision) and S2 (recall) in the [Appendix](#appendix).
 
 {{< figure src="boxplot_strip_F1_SCORE.png" alt="A boxplot showing F1 score of SNPs and indels" caption="**Figure 1:** F1 score for SNPs (left) and indels (right) for `minimap2` presets `lr:hq` (black) and `map-ont` (orange)." >}}
-### Basecalling > Mapping
-The data reiterates that moving from `hac` to `sup` provides a massive leap in accuracy, particularly for SNPs where the Q-score jumps from ~Q41 to ~Q47. The `lr:hq` preset is an excellent refinement, but the underlying basecalling model remains the dominant factor in pipeline accuracy.
-
-### The INDEL Ceiling
-Even with `sup` basecalling and the `lr:hq` preset, INDEL recall hits a hard ceiling at ~98.6%. This indicates that the remaining variants in the truth sets are either suffering from systematic basecaller deletion biases or reside in genomic regions too complex for standard long-read mapping to confidently span.
-
----
-
-
-
----
 
 ## Edge Cases: When `map-ont` Fights Back
 
@@ -100,6 +88,11 @@ For rapid pipelines relying on `hac` basecalling, `lr:hq` still provides a free,
 ---
 
 ## Appendix
+
+{{< figure src="boxplot_strip_PREC.png" alt="A boxplot showing precision of SNPs and indels" caption="**Figure S1:** Precision for SNPs (left) and indels (right) for `minimap2` presets `lr:hq` (black) and `map-ont` (orange)." >}}
+
+{{< figure src="boxplot_strip_RECALL.png" alt="A boxplot showing recall of SNPs and indels" caption="**Figure S2:** Recall for SNPs (left) and indels (right) for `minimap2` presets `lr:hq` (black) and `map-ont` (orange)." >}}
+
 
 [^a]: The $2/(w+1)$ statistical retention rate is a fundamental property of the minimizer (or winnowing) algorithm, formalised by [Schleimer et al. (2003)](10.1145/872757.872770) and [Roberts et al. (2004)](https://doi.org/10.1093/bioinformatics/bth408) and dictates k-mer sampling density. When a window of size $w$ slides forward by one position, the algorithm is effectively evaluating a combined pool of $w+1$ k-mers (one dropping out, $w-1$ shared between windows, and one entering). Assuming a (relatively) random DNA sequence, the chosen minimizer will only change if the absolute lowest hash value in that entire $w+1$ pool sits at one of the two ends: either the k-mer that just exited the window (probability $1/(w+1)$) or the new k-mer that just entered (probability $1/(w+1)$). Summing these mutually exclusive events gives the $2/(w+1)$ probability that a new seed is saved. Therefore, `map-ont` ($w=10$) retains 2/11 (~18%) of its k-mers as minimizers, while `lr:hq` ($w=19$) retains 2/20 (10%).
 [^b]: The F1 Q-score is the [Phred-scaled](https://en.wikipedia.org/wiki/Phred_quality_score) equivalent of the standard [F1 score](https://en.wikipedia.org/wiki/F-score), calculated as $-10 \log_{10}(1 - F1)$. This is useful when variant calling accuracies exceed 99.9%, as comparing linear F1 scores (e.g., 0.9990 vs 0.9999) becomes visually and intuitively difficult. Applying the standard Phred scale converts these fractional monstrosities into simpler logarithmic integers—for instance, an F1 of 0.999 becomes Q30, and 0.9999 becomes Q40—making microscopic differences in pipeline performance much easier to quantify.

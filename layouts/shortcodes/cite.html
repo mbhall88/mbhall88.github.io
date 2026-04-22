@@ -1,0 +1,60 @@
+{{- $citations := .Page.Scratch.Get "citations" | default slice -}}
+{{- $indexes := slice -}}
+
+{{- range .Params -}}
+  {{- $doi := . -}}
+  {{- $url := printf "https://api.crossref.org/works/%s" $doi -}}
+  {{- $res := resources.GetRemote $url -}}
+  
+  {{- if $res -}}
+    {{- $data := unmarshal $res.Content -}}
+    {{- $msg := index $data "message" -}}
+    
+    {{- $title := index $msg.title 0 -}}
+    {{- $journal := "" -}}
+    {{- if index $msg "container-title" -}}{{- $journal = index (index $msg "container-title") 0 -}}{{- end -}}
+    
+    {{- $year := "Unknown" -}}
+    {{- if index $msg "issued" -}}
+      {{- if index $msg.issued "date-parts" -}}
+        {{- $year = index (index $msg.issued "date-parts" 0) 0 -}}
+      {{- end -}}
+    {{- end -}}
+    
+    {{- $authors := "" -}}
+    {{- if index $msg "author" -}}
+      {{- if gt (len $msg.author) 1 -}}
+        {{- $firstAuthor := index $msg.author 0 -}}
+        {{- $givenInitial := "" -}}
+        {{- if index $firstAuthor "given" -}}{{- $givenInitial = printf ", %s." (substr $firstAuthor.given 0 1) -}}{{- end -}}
+        {{- $authors = printf "%s%s et al." $firstAuthor.family $givenInitial -}}
+      {{- else if eq (len $msg.author) 1 -}}
+        {{- $firstAuthor := index $msg.author 0 -}}
+        {{- $givenInitial := "" -}}
+        {{- if index $firstAuthor "given" -}}{{- $givenInitial = printf ", %s." (substr $firstAuthor.given 0 1) -}}{{- end -}}
+        {{- $authors = printf "%s%s" $firstAuthor.family $givenInitial -}}
+      {{- end -}}
+    {{- end -}}
+    
+    {{- $fullCitation := printf "%s (%v). %s. <i>%s</i>. <a href=\"https://doi.org/%s\" target=\"_blank\">[doi:%s]</a>" $authors $year $title $journal $doi $doi -}}
+    
+    {{- $idx := -1 -}}
+    {{- range $i, $c := $citations -}}
+      {{- if eq $c $fullCitation -}}{{- $idx = $i -}}{{- end -}}
+    {{- end -}}
+    
+    {{- if eq $idx -1 -}}
+      {{- $citations = $citations | append $fullCitation -}}
+      {{- $idx = sub (len $citations) 1 -}}
+    {{- end -}}
+    
+    {{- $indexes = $indexes | append (add $idx 1) -}}
+  {{- else -}}
+    {{- errorf "Failed to fetch citation for DOI: %s" $doi -}}
+  {{- end -}}
+{{- end -}}
+
+{{- .Page.Scratch.Set "citations" $citations -}}
+
+{{- /* Render the citation link */ -}}
+[<a href="#references" class="citation-link">{{ delimit $indexes ", " }}</a>]

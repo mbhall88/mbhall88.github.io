@@ -4,6 +4,7 @@ theme: "PaperMod"
 languageCode: "en-au"
 ignoreFiles: ["README.md"]
 params:
+  citationStyle: "nature"
   env: production
   author: "Michael Hall"
   defaultTheme: auto
@@ -71,6 +72,10 @@ menu:
       name: Posts
       url: /post/
       weight: 10
+
+mediaTypes:
+  text/x-bibliography:
+    suffixes: ["bib"]
 
 markup:
   goldmark:

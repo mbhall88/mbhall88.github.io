@@ -30,6 +30,18 @@ Visit `http://localhost:1313`.
   3. Commit the resulting DOI back to your post's frontmatter.
 - **Commenting:** Powered by [giscus](https://giscus.app) via GitHub Discussions.
 
+### 5. Citations & Footnotes
+You can automatically generate academic bibliographies using DOIs. 
+Simply place the `cite` shortcode anywhere in your Markdown:
+`This claim is supported by recent findings {{< cite "10.1038/s41586-021-03616-x" >}}.`
+
+For multiple citations in one spot, pass multiple DOIs separated by spaces:
+`{{< cite "10.123/a" "10.456/b" >}}`
+
+This will generate numbered links in the text (e.g., `[1, 2]`) and automatically build a "References" section at the bottom of the post in the **Nature** citation style (with a hyperlinked DOI enforced). You can change the global citation style by editing `citationStyle` in `hugo.yaml`.
+
+**Footnotes:** Standard markdown footnotes (e.g., `[^1]`) will automatically be styled as lowercase letters (e.g., `[a]`) to cleanly separate them from your numbered DOI citations.
+
 ## Configuration
 To enable **Zenodo DOI automation**, you must:
 1. Generate a Personal Access Token on [Zenodo](https://zenodo.org/account/settings/applications/).

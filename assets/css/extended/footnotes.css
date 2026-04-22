@@ -1,0 +1,24 @@
+.post-single {
+    counter-reset: footnote;
+}
+.footnote-ref a {
+    visibility: hidden;
+    position: relative;
+    display: inline-block;
+    width: 1em; /* Allocate space for the letter */
+}
+.footnote-ref a::after {
+    visibility: visible;
+    counter-increment: footnote;
+    content: "[" counter(footnote, lower-alpha) "]";
+    position: absolute;
+    left: 0;
+    color: var(--primary);
+    text-decoration: none;
+}
+.footnote-ref a:hover::after {
+    text-decoration: underline;
+}
+.footnotes ol {
+    list-style-type: lower-alpha;
+}

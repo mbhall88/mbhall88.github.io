@@ -46,6 +46,19 @@
 
     {{- /* Custom Injection: Citation Section */ -}}
     {{- partial "citation.html" . -}}
+    
+    {{- /* Custom Injection: References List */ -}}
+    {{- $citations := .Scratch.Get "citations" -}}
+    {{- if $citations -}}
+    <div class="references-container" style="margin-top: 3rem; padding: 1.5rem; background: var(--code-bg); border-radius: 8px; border: 1px solid var(--tertiary);">
+        <h3 id="references">References</h3>
+        <ol class="references-list" style="font-size: 0.9em; padding-left: 1.5rem; margin-top: 1rem;">
+            {{- range $citations -}}
+            <li style="margin-bottom: 0.8rem; line-height: 1.4;">{{ . | safeHTML }}</li>
+            {{- end -}}
+        </ol>
+    </div>
+    {{- end -}}
   </div>
   {{- end }}
 
