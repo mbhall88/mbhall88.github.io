@@ -8,20 +8,63 @@
 {{- $data := $csv.Content | transform.Unmarshal -}}
 {{- if gt (len $data) 0 -}}
 <div class="csv-table-wrapper" style="margin: 2rem 0;">
-    {{- if $caption }}<h4 style="margin-bottom: 1rem;">{{ $caption }}</h4>{{ end -}}
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+        {{- if $caption }}<h4 style="margin: 0;">{{ $caption }}</h4>{{ end -}}
+        
+        <div style="font-size: 0.9em;">
+            <label for="limit-{{ .Ordinal }}-{{ $file | anchorize }}">Rows per page: </label>
+            <select id="limit-{{ .Ordinal }}-{{ $file | anchorize }}" style="background: var(--entry); color: var(--primary); border: 1px solid var(--tertiary); padding: 0.2rem; border-radius: var(--radius);">
+                <option value="10">10</option>
+                <option value="25">25</option>
+                <option value="50">50</option>
+                <option value="100">100</option>
+                <option value="{{ sub (len $data) 1 }}">All</option>
+            </select>
+        </div>
+    </div>
+    
     <div id="grid-{{ .Ordinal }}-{{ $file | anchorize }}"></div>
     <script>
         document.addEventListener("DOMContentLoaded", function() {
             try {
-                const data = {{ $data | jsonify | safeJS }};
-                new gridjs.Grid({
-                    data: data,
+                // Hugo unmarshals CSV into an array of maps (objects)
+                const rawData = {{ $data | jsonify | safeJS }};
+                
+                // Extract headers from the first object
+                const columns = Object.keys(rawData[0]);
+                
+                // Extract row data
+                const rows = rawData.map(rowObj => Object.values(rowObj));
+                
+                const grid = new gridjs.Grid({
+                    columns: columns,
+                    data: rows,
                     search: true,
-                    sort: true,
-                    pagination: { limit: 10 },
+                    sort: {
+                        multiColumn: true
+                    },
+                    pagination: { 
+                        limit: 10,
+                        summary: true
+                    },
                     resizable: true,
-                    width: '100%'
-                }).render(document.getElementById("grid-{{ .Ordinal }}-{{ $file | anchorize }}"));
+                    width: '100%',
+                    className: { table: 'gridjs-table' }
+                });
+                
+                grid.render(document.getElementById("grid-{{ .Ordinal }}-{{ $file | anchorize }}"));
+                
+                // Add event listener to the dropdown
+                document.getElementById("limit-{{ .Ordinal }}-{{ $file | anchorize }}").addEventListener('change', function(e) {
+                    const newLimit = parseInt(e.target.value);
+                    grid.updateConfig({
+                        pagination: {
+                            limit: newLimit,
+                            summary: true
+                        }
+                    }).forceRender();
+                });
+                
             } catch (e) {
                 console.error("Grid.js Error:", e);
             }
@@ -29,7 +72,7 @@
     </script>
 </div>
 {{- else -}}
-    <p><i>(Table is empty: {{ $file }})</i></p>
+    <p><i>(Table is empty or missing headers: {{ $file }})</i></p>
 {{- end -}}
 {{- else -}}
     {{- errorf "CSV file not found: %s" $file -}}
