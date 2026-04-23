@@ -20,12 +20,7 @@
                     sort: true,
                     pagination: { limit: 10 },
                     resizable: true,
-                    width: '100%',
-                    style: { 
-                        table: { 
-                            'white-space': 'normal' 
-                        } 
-                    }
+                    width: '100%'
                 }).render(document.getElementById("grid-{{ .Ordinal }}-{{ $file | anchorize }}"));
             } catch (e) {
                 console.error("Grid.js Error:", e);

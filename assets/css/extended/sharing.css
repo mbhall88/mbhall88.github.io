@@ -57,9 +57,8 @@
     background-color: var(--entry) !important;
     color: var(--primary) !important;
     line-height: 1.4 !important;
-    word-break: break-word !important; /* Force wrapping to prevent overlap */
-    white-space: normal !important;   /* Allow text to wrap */
-    min-width: 120px;                 /* Ensure columns have breathing room */
+    white-space: nowrap !important;   /* Prevent text/number wrapping */
+    min-width: 100px;                 /* Ensure enough space for headers */
 }
 
 .gridjs-th {
