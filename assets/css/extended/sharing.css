@@ -46,7 +46,8 @@
 }
 
 .gridjs-table {
-    width: 100%;
+    width: max-content !important; /* Allow table to grow as wide as needed */
+    min-width: 100%;               /* But at least take up the full container */
     background-color: var(--entry) !important;
     border-collapse: collapse !important;
 }
