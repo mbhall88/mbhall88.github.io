@@ -2,19 +2,14 @@
     counter-reset: footnote;
 }
 .footnote-ref {
-    visibility: hidden;
-    position: relative;
-    display: inline-block;
-    width: 1em; /* Allocate space for the letter */
+    font-size: 0;
+    text-decoration: none;
 }
 .footnote-ref::after {
-    visibility: visible;
     counter-increment: footnote;
     content: "[" counter(footnote, lower-alpha) "]";
-    position: absolute;
-    left: 0;
+    font-size: 0.8rem;
     color: var(--primary);
-    text-decoration: none;
 }
 .footnote-ref:hover::after {
     text-decoration: underline;
@@ -45,3 +40,4 @@
 .footnotes hr {
     display: none; /* Hide the default horizontal rule */
 }
+

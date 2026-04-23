@@ -90,17 +90,17 @@
         {{- end }}
         </ul>
         {{- end }}
-        {{- if .Scratch.Get "citations" }}
-        <ul>
-            <li>
-                <a href="#references" aria-label="References">References</a>
-            </li>
-        </ul>
-        {{- end }}
         {{- if findRE "class=\"footnotes\"" .Content }}
         <ul>
             <li>
                 <a href="#footnotes" aria-label="Footnotes">Footnotes</a>
+            </li>
+        </ul>
+        {{- end }}
+        {{- if .Scratch.Get "citations" }}
+        <ul>
+            <li>
+                <a href="#references" aria-label="References">References</a>
             </li>
         </ul>
         {{- end }}

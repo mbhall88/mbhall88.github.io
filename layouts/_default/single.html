@@ -40,9 +40,10 @@
 
   {{- if .Content }}
   <div class="post-content md-content">
+    {{- $content := replaceRE "<div class=\"footnotes\" role=\"doc-endnotes\">" "<div class=\"footnotes\" id=\"footnotes\" role=\"doc-endnotes\">" .Content -}}
     {{- if not (.Param "disableAnchoredHeadings") }}
-    {{- partial "anchored_headings.html" .Content -}}
-    {{- else }}{{ .Content }}{{ end }}
+    {{- partial "anchored_headings.html" $content -}}
+    {{- else }}{{ $content | safeHTML }}{{ end }}
 
     {{- /* Custom Injection: Citation Section */ -}}
     {{- partial "citation.html" . -}}
