@@ -12,20 +12,24 @@
     <div id="grid-{{ .Ordinal }}-{{ $file | anchorize }}"></div>
     <script>
         document.addEventListener("DOMContentLoaded", function() {
-            new gridjs.Grid({
-                from: (function() {
-                    const data = {{ $data | jsonify | safeJS }};
-                    return {
-                        columns: Object.keys(data[0]),
-                        data: data.map(row => Object.values(row))
-                    };
-                })(),
-                search: true,
-                sort: true,
-                pagination: { limit: 10 },
-                resizable: true,
-                className: { table: 'gridjs-table' }
-            }).render(document.getElementById("grid-{{ .Ordinal }}-{{ $file | anchorize }}"));
+            try {
+                const data = {{ $data | jsonify | safeJS }};
+                new gridjs.Grid({
+                    data: data,
+                    search: true,
+                    sort: true,
+                    pagination: { limit: 10 },
+                    resizable: true,
+                    width: '100%',
+                    style: { 
+                        table: { 
+                            'white-space': 'normal' 
+                        } 
+                    }
+                }).render(document.getElementById("grid-{{ .Ordinal }}-{{ $file | anchorize }}"));
+            } catch (e) {
+                console.error("Grid.js Error:", e);
+            }
         });
     </script>
 </div>

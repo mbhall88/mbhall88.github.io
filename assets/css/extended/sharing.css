@@ -31,17 +31,55 @@
     border-radius: 0;
 }
 
-/* Grid.js PaperMod Overrides */
+/* Grid.js PaperMod Fixes */
+.csv-table-wrapper {
+    width: 100%;
+    overflow-x: auto; /* Enable scrolling for wide tables */
+    margin: 2rem 0;
+}
+
 .gridjs-container {
     color: var(--primary) !important;
     background-color: transparent !important;
+    font-family: var(--secondary-font), sans-serif;
+    font-size: 0.85rem;
 }
-.gridjs-td, .gridjs-th {
+
+.gridjs-table {
+    width: 100%;
     background-color: var(--entry) !important;
-    border: 1px solid var(--tertiary) !important;
-    color: var(--primary) !important;
+    border-collapse: collapse !important;
 }
-.gridjs-footer, .gridjs-search-input {
+
+.gridjs-th, .gridjs-td {
+    padding: 10px 15px !important;
+    border: 1px solid var(--tertiary) !important;
+    background-color: var(--entry) !important;
+    color: var(--primary) !important;
+    line-height: 1.4 !important;
+    word-break: break-word !important; /* Force wrapping to prevent overlap */
+    white-space: normal !important;   /* Allow text to wrap */
+    min-width: 120px;                 /* Ensure columns have breathing room */
+}
+
+.gridjs-th {
+    font-weight: bold !important;
+    background-color: var(--tertiary) !important;
+}
+
+.gridjs-search-input, .gridjs-footer {
     background-color: var(--tertiary) !important;
     color: var(--primary) !important;
+    border: 1px solid var(--tertiary) !important;
+}
+
+.gridjs-pagination .gridjs-pages button {
+    background-color: var(--entry) !important;
+    color: var(--primary) !important;
+    border: 1px solid var(--tertiary) !important;
+}
+
+.gridjs-pagination .gridjs-pages button:hover {
+    background-color: var(--primary) !important;
+    color: var(--entry) !important;
 }
