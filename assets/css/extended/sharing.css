@@ -45,7 +45,7 @@
 }
 
 .gridjs-table {
-    width: max-content !important;
+    display: table !important; /* Critical to override PaperMod's global display: block */
     min-width: 100%;
     background-color: var(--entry) !important;
     border-collapse: collapse !important;
@@ -59,12 +59,11 @@
 .gridjs-th {
     padding: 12px 15px !important;
     border: 1px solid var(--tertiary) !important;
-    background-color: var(--tertiary) !important; /* Header background */
-    color: var(--primary) !important;            /* Header text color */
+    background-color: var(--tertiary) !important; 
+    color: var(--primary) !important;            
     font-weight: 700 !important;
     text-align: left !important;
     white-space: nowrap !important;
-    min-width: 100px;
 }
 
 /* Ensure text inside header button/content is visible */

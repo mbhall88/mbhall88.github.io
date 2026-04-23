@@ -32,12 +32,18 @@
 
                 if (Array.isArray(rawData) && rawData.length > 0) {
                     if (Array.isArray(rawData[0])) {
-                        // Array of arrays - rawData[0] is the header names
-                        columns = rawData[0]; 
+                        // Array of arrays - map strings to objects to enforce fixedHeader widths
+                        columns = rawData[0].map(header => ({
+                            name: header,
+                            width: '130px'
+                        })); 
                         rows = rawData.slice(1);
                     } else {
-                        // Array of objects - Hugo already parsed headers
-                        columns = Object.keys(rawData[0]);
+                        // Array of objects
+                        columns = Object.keys(rawData[0]).map(header => ({
+                            name: header,
+                            width: '130px'
+                        }));
                         rows = rawData.map(row => Object.values(row));
                     }
                 }
@@ -53,7 +59,7 @@
                     },
                     resizable: true,
                     fixedHeader: true,
-                    height: '500px', // Set height for fixed header to work
+                    height: '500px', 
                     width: '100%',
                     className: { 
                         table: 'gridjs-table',
