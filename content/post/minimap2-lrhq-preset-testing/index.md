@@ -1,7 +1,8 @@
 ---
 title: Minimap2 lr:hq preset testing
 date: 2026-04-22T14:16:33+10:00
-draft: true
+draft: false
+math: true
 tags:
   - minimap2
   - alignment
@@ -10,7 +11,7 @@ tags:
 ShowToc: "true"
 ---
 
-# Evaluating minimap2's `lr:hq` preset for bacterial nanopore variant calling
+## Evaluating minimap2's `lr:hq` preset for bacterial nanopore variant calling
 
 ## Introduction
 
@@ -50,16 +51,7 @@ I have tried to ensure easy reproducibility with this analysis in case I need to
 
 The sample-aggregated results paint a very consistent picture.
 
-| Variant Type | Read Model | Preset  | Mean Precision | Mean Recall | Mean F1 Score | Mean F1 Q-Score [^b] |
-| ------------ | ---------- | ------- | -------------- | ----------- | ------------- | -------------------- |
-| SNP          | hac        | lr:hq   | 99.997%        | 99.774%     | 99.884%       | 41.26                |
-| SNP          | hac        | map-ont | 99.995%        | 99.774%     | 99.883%       | 41.06                |
-| SNP          | sup        | lr:hq   | 99.998%        | 99.779%     | 99.887%       | 47.20                |
-| SNP          | sup        | map-ont | 99.999%        | 99.769%     | 99.882%       | 46.95                |
-| INDEL        | hac        | lr:hq   | 99.397%        | 97.820%     | 98.599%       | 25.06                |
-| INDEL        | hac        | map-ont | 99.377%        | 97.766%     | 98.560%       | 24.93                |
-| INDEL        | sup        | lr:hq   | 99.979%        | 98.614%     | 99.290%       | 22.15                |
-| INDEL        | sup        | map-ont | 99.966%        | 98.601%     | 99.277%       | 21.98                |
+{{< csv-table src="aggregated_precision_recall_summaries.csv" caption="Interactive Variant Calling Results" >}}
 
 Across the board, `lr:hq` is a *marginal* improvement. For SNPs, the F1 Q-score sees a bump of about 0.2 to 0.25. For indels, we see a similar bump of about 0.13 to 0.17. A shift this deep in the decimal points might seem trivial, but the ONT is improving so much now that progress is measured by hunting down the last few false calls. These aren't massive, earth-shattering percentage leaps anymore. But for something like bacterial outbreak tracking where a single SNP can make a big difference, squeezing out those last false calls is important.
 
@@ -94,30 +86,36 @@ For rapid pipelines relying on `hac` basecalling, `lr:hq` still provides a free,
 {{< figure src="boxplot_strip_RECALL.png" alt="A boxplot showing recall of SNPs and indels" caption="**Figure S2:** Recall for SNPs (left) and indels (right) for `minimap2` presets `lr:hq` (black) and `map-ont` (orange)." >}}
 
 
-[^a]: The $2/(w+1)$ statistical retention rate is a fundamental property of the minimizer (or winnowing) algorithm, formalised by [Schleimer et al. (2003)](10.1145/872757.872770) and [Roberts et al. (2004)](https://doi.org/10.1093/bioinformatics/bth408) and dictates k-mer sampling density. When a window of size $w$ slides forward by one position, the algorithm is effectively evaluating a combined pool of $w+1$ k-mers (one dropping out, $w-1$ shared between windows, and one entering). Assuming a (relatively) random DNA sequence, the chosen minimizer will only change if the absolute lowest hash value in that entire $w+1$ pool sits at one of the two ends: either the k-mer that just exited the window (probability $1/(w+1)$) or the new k-mer that just entered (probability $1/(w+1)$). Summing these mutually exclusive events gives the $2/(w+1)$ probability that a new seed is saved. Therefore, `map-ont` ($w=10$) retains 2/11 (~18%) of its k-mers as minimizers, while `lr:hq` ($w=19$) retains 2/20 (10%).
-[^b]: The F1 Q-score is the [Phred-scaled](https://en.wikipedia.org/wiki/Phred_quality_score) equivalent of the standard [F1 score](https://en.wikipedia.org/wiki/F-score), calculated as $-10 \log_{10}(1 - F1)$. This is useful when variant calling accuracies exceed 99.9%, as comparing linear F1 scores (e.g., 0.9990 vs 0.9999) becomes visually and intuitively difficult. Applying the standard Phred scale converts these fractional monstrosities into simpler logarithmic integers—for instance, an F1 of 0.999 becomes Q30, and 0.9999 becomes Q40—making microscopic differences in pipeline performance much easier to quantify.
+## Scripts
 
 The following scripts detail the complete pipeline used to generate the data for this analysis.
 
-### 1. Download Data (`01_download_data.sh`)
-```bash
-#!/bin/bash
-set -euo pipefail
+### 1. Download Data
+{{< share-file src="01_download_data.sh" >}}
 
-cd /scratch/user/uqmhal11/minimap_preset_testing/data/truth_vcfs
-wget -O truth_vcfs.zip "[https://zenodo.org/api/records/10867171/files-archive](https://zenodo.org/api/records/10867171/files-archive)"
-unzip truth_vcfs.zip -d .
-rm truth_vcfs.zip
+### 2. Subsample Reads
+{{< share-file src="02_subsample_reads.sh" >}}
 
-for archive in *.tar.gz; do
-	tar -xzf "$archive"
-	rm "$archive"
-done
+### 3. Align Reads
+{{< share-file src="03_align_reads.sh" >}}
 
-cd /scratch/user/uqmhal11/minimap_preset_testing/data/reads
-csvtk cut -Uf ont_simplex_hac ../../NanoVarBench/config/accessions.csv > hac_accessions.txt
-csvtk cut -Uf ont_simplex_sup ../../NanoVarBench/config/accessions.csv > sup_accessions.txt
+### 4. Variant Calling
+{{< share-file src="04a_clair3_wrapper.sh" >}}
+{{< share-file src="04b_submit_variant_calling.sh" >}}
 
-ssubmit -t 12h -m 8g download_hac "kingfisher get --run-identifiers-list hac_accessions.txt -m ena-ascp ena-ftp --output-directory hac --check-md5sums"
-ssubmit -t 12h -m 8g download_sup "kingfisher get --run-identifiers-list sup_accessions.txt -m ena-ascp ena-ftp --output-directory sup --check-md5sums"
+### 5. Assessment
+{{< share-file src="05a_filter.sh" >}}
+{{< share-file src="05b_assess.sh" >}}
+{{< share-file src="05c_submit_evaluation.sh" >}}
 
+### 6. Aggregation and Plotting
+{{< share-file src="06_aggregate_and_plot.py" >}}
+{{< share-file src="07_generate_summary_table.py" >}}
+{{< share-file src="08_plot_box_strip_metrics.py" >}}
+{{< share-file src="09_plot_pr_curves.py" >}}
+
+### 7. Helper Scripts
+{{< share-file src="filter_hets.py" >}}
+
+[^a]: The $2/(w+1)$ statistical retention rate is a fundamental property of the minimizer (or winnowing) algorithm, formalised by [Schleimer et al. (2003)](10.1145/872757.872770) and [Roberts et al. (2004)](https://doi.org/10.1093/bioinformatics/bth408) and dictates k-mer sampling density. When a window of size $w$ slides forward by one position, the algorithm is effectively evaluating a combined pool of $w+1$ k-mers (one dropping out, $w-1$ shared between windows, and one entering). Assuming a (relatively) random DNA sequence, the chosen minimizer will only change if the absolute lowest hash value in that entire $w+1$ pool sits at one of the two ends: either the k-mer that just exited the window (probability $1/(w+1)$) or the new k-mer that just entered (probability $1/(w+1)$) . Summing these mutually exclusive events gives the $2/(w+1)$ probability that a new seed is saved. Therefore, `map-ont` ($w=10$) retains 2/11 (~18%) of its k-mers as minimizers, while `lr:hq` ($w=19$) retains 2/20 (10%).
+[^b]: The F1 Q-score is the [Phred-scaled](https://en.wikipedia.org/wiki/Phred_quality_score) equivalent of the standard [F1 score](https://en.wikipedia.org/wiki/F-score), calculated as $-10 \log_{10}(1 - F1)$. This is useful when variant calling accuracies exceed 99.9%, as comparing linear F1 scores (e.g., 0.9990 vs 0.9999) becomes visually and intuitively difficult. Applying the standard Phred scale converts these fractional monstrosities into simpler logarithmic integers—for instance, an F1 of 0.999 becomes Q30, and 0.9999 becomes Q40—making microscopic differences in pipeline performance much easier to quantify.
