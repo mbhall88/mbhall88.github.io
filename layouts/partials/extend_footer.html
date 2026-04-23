@@ -15,3 +15,24 @@ document.addEventListener("DOMContentLoaded", function() {
 });
 </script>
 {{- end -}}
+
+{{- if .IsPage -}}
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    // 1. Convert footnote numbers to letters and handle duplicates
+    const refs = document.querySelectorAll('.footnote-ref a');
+    const map = new Map();
+    let count = 0;
+    
+    refs.forEach(ref => {
+        const href = ref.getAttribute('href');
+        if (!map.has(href)) {
+            // Assign a new letter (a, b, c...)
+            map.set(href, String.fromCharCode(97 + count++));
+        }
+        // Replace the number with [letter]
+        ref.innerText = '[' + map.get(href) + ']';
+    });
+});
+</script>
+{{- end -}}

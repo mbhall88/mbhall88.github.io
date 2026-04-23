@@ -1,19 +1,18 @@
-.post-single {
-    counter-reset: footnote;
-}
+/* In-text Footnote Links */
 .footnote-ref {
-    font-size: 0;
     text-decoration: none;
+    vertical-align: super;
 }
-.footnote-ref::after {
-    counter-increment: footnote;
-    content: "[" counter(footnote, lower-alpha) "]";
+.footnote-ref a {
     font-size: 0.8rem;
     color: var(--primary);
+    text-decoration: none;
 }
-.footnote-ref:hover::after {
+.footnote-ref a:hover {
     text-decoration: underline;
 }
+
+/* Bottom Footnotes List Styling */
 .footnotes ol {
     list-style-type: lower-alpha;
 }
@@ -22,9 +21,9 @@
 .footnotes {
     margin-top: 3rem;
     padding: 1.5rem;
-    background: var(--entry); /* Slightly different from --code-bg used in References */
+    background: var(--entry);
     border-radius: 8px;
-    border-top: 3px solid var(--primary); /* Distinct top border */
+    border-top: 3px solid var(--primary);
     border-left: 1px solid var(--tertiary);
     border-right: 1px solid var(--tertiary);
     border-bottom: 1px solid var(--tertiary);
@@ -40,4 +39,3 @@
 .footnotes hr {
     display: none; /* Hide the default horizontal rule */
 }
-

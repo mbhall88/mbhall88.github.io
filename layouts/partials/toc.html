@@ -1,6 +1,6 @@
 {{- $headers := findRE "<h[1-6].*?>(.|\n])+?</h[1-6]>" .Content -}}
 {{- $has_headers := ge (len $headers) 1 -}}
-{{- if $has_headers -}}
+{{- if or $has_headers (.Scratch.Get "citations") (findRE "class=\"footnotes\"" .Content) -}}
 <details class="toc" {{if (.Param "TocOpen") }} open{{ end }}>
     <summary accesskey="c" title="(Alt + C)">
         <span class="title">{{- i18n "toc" | default "Table of Contents" }}</span>
@@ -76,7 +76,6 @@
                 <a href="#{{- $cleanedID -}}" aria-label="{{- $header | plainify | safeHTML -}}">{{- $header | plainify | safeHTML -}}</a>
                 {{- end -}}
                 {{- end -}}
-                <!-- {{- $firstHeaderLevel := len (seq (index (findRE "[1-6]" (index $headers 0) 1) 0)) -}} -->
                 {{- $firstHeaderLevel := $largest }}
                 {{- $lastHeaderLevel := len (seq (index (findRE "[1-6]" (index $headers (sub (len $headers) 1)) 1) 0)) }}
             </li>
@@ -88,20 +87,18 @@
         </li>
         {{- end -}}
         {{- end }}
-        </ul>
+
+        {{- /* CUSTOM: Append References and Footnotes inside the main list */ -}}
+        {{- if .Scratch.Get "citations" }}
+        <li>
+            <a href="#references" aria-label="References">References</a>
+        </li>
         {{- end }}
         {{- if findRE "class=\"footnotes\"" .Content }}
-        <ul>
-            <li>
-                <a href="#footnotes" aria-label="Footnotes">Footnotes</a>
-            </li>
-        </ul>
+        <li>
+            <a href="#footnotes" aria-label="Footnotes">Footnotes</a>
+        </li>
         {{- end }}
-        {{- if .Scratch.Get "citations" }}
-        <ul>
-            <li>
-                <a href="#references" aria-label="References">References</a>
-            </li>
         </ul>
         {{- end }}
     </div>
