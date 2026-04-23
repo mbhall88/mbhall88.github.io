@@ -34,7 +34,7 @@
 /* Grid.js PaperMod Fixes */
 .csv-table-wrapper {
     width: 100%;
-    overflow-x: auto; /* Enable scrolling for wide tables */
+    overflow-x: auto;
     margin: 2rem 0;
 }
 
@@ -42,36 +42,48 @@
     color: var(--primary) !important;
     background-color: transparent !important;
     font-family: var(--secondary-font), sans-serif;
-    font-size: 0.85rem;
 }
 
 .gridjs-table {
-    width: max-content !important; /* Allow table to grow as wide as needed */
-    min-width: 100%;               /* But at least take up the full container */
+    width: max-content !important;
+    min-width: 100%;
     background-color: var(--entry) !important;
     border-collapse: collapse !important;
 }
 
-.gridjs-th, .gridjs-td {
+/* Header Fixes */
+.gridjs-thead {
+    background-color: var(--tertiary) !important;
+}
+
+.gridjs-th {
+    padding: 12px 15px !important;
+    border: 1px solid var(--tertiary) !important;
+    background-color: var(--tertiary) !important; /* Header background */
+    color: var(--primary) !important;            /* Header text color */
+    font-weight: 700 !important;
+    text-align: left !important;
+    white-space: nowrap !important;
+    min-width: 100px;
+}
+
+/* Ensure text inside header button/content is visible */
+.gridjs-th-content, 
+.gridjs-th button,
+.gridjs-th span {
+    color: var(--primary) !important;
+    font-size: 0.85rem !important;
+    background: transparent !important;
+    border: none !important;
+}
+
+.gridjs-td {
     padding: 10px 15px !important;
     border: 1px solid var(--tertiary) !important;
     background-color: var(--entry) !important;
     color: var(--primary) !important;
     line-height: 1.4 !important;
-    white-space: nowrap !important;   /* Prevent text/number wrapping */
-    min-width: 100px;                 /* Ensure enough space for headers */
-}
-
-.gridjs-thead {
-    display: table-header-group !important; /* Force the header to show */
-}
-
-.gridjs-th {
-    font-weight: bold !important;
-    background-color: var(--tertiary) !important;
-    color: var(--primary) !important;
-    text-align: left !important;
-    border-bottom: 2px solid var(--primary) !important;
+    white-space: nowrap !important;
 }
 
 .gridjs-search-input, .gridjs-footer {
