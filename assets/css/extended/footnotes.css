@@ -1,13 +1,13 @@
 .post-single {
     counter-reset: footnote;
 }
-.footnote-ref a {
+.footnote-ref {
     visibility: hidden;
     position: relative;
     display: inline-block;
     width: 1em; /* Allocate space for the letter */
 }
-.footnote-ref a::after {
+.footnote-ref::after {
     visibility: visible;
     counter-increment: footnote;
     content: "[" counter(footnote, lower-alpha) "]";
@@ -16,9 +16,32 @@
     color: var(--primary);
     text-decoration: none;
 }
-.footnote-ref a:hover::after {
+.footnote-ref:hover::after {
     text-decoration: underline;
 }
 .footnotes ol {
     list-style-type: lower-alpha;
+}
+
+/* Footnotes Container Styling */
+.footnotes {
+    margin-top: 3rem;
+    padding: 1.5rem;
+    background: var(--entry); /* Slightly different from --code-bg used in References */
+    border-radius: 8px;
+    border-top: 3px solid var(--primary); /* Distinct top border */
+    border-left: 1px solid var(--tertiary);
+    border-right: 1px solid var(--tertiary);
+    border-bottom: 1px solid var(--tertiary);
+}
+.footnotes::before {
+    content: "Footnotes";
+    display: block;
+    font-size: 1.17em; /* Equivalent to h3 */
+    font-weight: 700;
+    margin-bottom: 1rem;
+    color: var(--primary);
+}
+.footnotes hr {
+    display: none; /* Hide the default horizontal rule */
 }
