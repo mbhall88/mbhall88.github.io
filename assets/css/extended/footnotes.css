@@ -2,19 +2,11 @@
 .footnote-ref {
     text-decoration: none;
     vertical-align: super;
-}
-.footnote-ref a {
-    font-size: 0.75rem;
+    font-size: 0.8rem;
     color: var(--primary);
-    text-decoration: none;
+    padding: 0 0.1em;
 }
-.footnote-ref a::before {
-    content: "[";
-}
-.footnote-ref a::after {
-    content: "]";
-}
-.footnote-ref a:hover {
+.footnote-ref:hover {
     text-decoration: underline;
 }
 
