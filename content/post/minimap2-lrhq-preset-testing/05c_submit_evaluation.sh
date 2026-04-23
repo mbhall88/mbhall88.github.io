@@ -19,6 +19,12 @@ find . -mindepth 4 -maxdepth 4 -name "*.vcf.gz" | grep -v "\.filter\.vcf\.gz" | 
     bed="${truth_base}/${sample}/${sample}.bed"
     filter_vcf="${outdir}/${sample}.filter.vcf.gz"
 
+    # skip submitting a job if the output already exists
+    if [[ -f "$filter_vcf" ]]; then
+        echo "Output $filter_vcf already exists, skipping $vcf"
+        continue
+    fi
+
     job_name="eval_${sample}_${read_model}_${preset}"
 
     ssubmit -t 1h -m 4g "$job_name" \

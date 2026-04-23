@@ -28,7 +28,14 @@ if not summary_data:
     exit(1)
 
 merged_df = pd.concat(summary_data, ignore_index=True)
+# Filter for the 'BEST' threshold to standardise the comparison
 best_df = merged_df[merged_df['THRESHOLD'] == 'BEST'].copy()
+
+# Filter out SVs
+best_df = best_df[best_df['VAR_TYPE'] != 'SV']
+
+# Sort the data by sample, read_model, and VAR_TYPE
+best_df = best_df.sort_values(['sample', 'read_model', 'VAR_TYPE'])
 
 out_csv = base_dir / "aggregated_precision_recall_summaries.csv"
 best_df.to_csv(out_csv, index=False)

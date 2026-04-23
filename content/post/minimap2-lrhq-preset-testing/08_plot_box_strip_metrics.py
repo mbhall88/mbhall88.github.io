@@ -104,5 +104,6 @@ for y in metrics:
             )
 
     fig.tight_layout()
-    out_file = plot_dir / f"boxplot_strip_{y}.pdf"
-    fig.savefig(out_file)
+    out_file = plot_dir / f"boxplot_strip_{y}.png"
+    fig.savefig(out_file, dpi=300)
+    print(f"Saved plot: {out_file}")

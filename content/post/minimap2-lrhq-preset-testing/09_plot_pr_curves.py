@@ -142,5 +142,6 @@ fig.legend(
     framealpha=1.0, fancybox=True, shadow=True,
 )
 
-out_pdf = plot_dir / "aggregated_precision_recall.pdf"
-fig.savefig(out_pdf, bbox_inches="tight")
+out_png = plot_dir / "aggregated_precision_recall.png"
+fig.savefig(out_png, bbox_inches="tight", dpi=300)
+print(f"Saved plot: {out_png}")

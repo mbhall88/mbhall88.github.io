@@ -29,6 +29,11 @@ for bam in ../alignments/*.bam; do
     outvcf="${outdir}/${sample}.vcf.gz"
     log="${outdir}/${sample}.log"
 
+    if [[ -f "$outvcf" ]]; then
+        echo "Skipping variant calling: $outvcf already exists."
+        continue
+    fi
+
     clair_model="dna_r10.4.1_e8.2_400bps_${read_model}@v4.3.0"
     job_name="clair_${sample}_${read_model}_${preset}"
 

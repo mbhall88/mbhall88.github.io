@@ -1,7 +1,7 @@
 #!/bin/bash
-cd /scratch/user/uqmhal11/minimap_preset_testing/data/reads
+cd /scratch/user/uqmhal11/minimap_preset_testing/data/reads || exit 1
 
-csv_file="/scratch/user/uqmhal11/minimap_preset_testing/NanoVarBench/config/accessions.csv"
+csv_file="../../config/accessions.csv"
 truth_dir="../truth_vcfs"
 
 mkdir -p hac_subsampled sup_subsampled

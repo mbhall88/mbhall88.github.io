@@ -11,12 +11,13 @@ if not csv_path.exists():
     exit(1)
 
 df = pd.read_csv(csv_path)
+df = df[df['VAR_TYPE'] != 'SV']
 summary_df = df.groupby(['VAR_TYPE', 'read_model', 'preset'])[['PREC', 'RECALL', 'F1_SCORE', 'F1_QSCORE']].mean().reset_index()
 summary_df = summary_df.sort_values(['VAR_TYPE', 'read_model', 'preset'], ascending=[False, True, True])
 
-summary_df['PREC'] = summary_df['PREC'].apply(lambda x: f"{x:.6f}")
-summary_df['RECALL'] = summary_df['RECALL'].apply(lambda x: f"{x:.6f}")
-summary_df['F1_SCORE'] = summary_df['F1_SCORE'].apply(lambda x: f"{x:.6f}")
+summary_df['PREC'] = summary_df['PREC'].apply(lambda x: f"{x * 100:.3f}%")
+summary_df['RECALL'] = summary_df['RECALL'].apply(lambda x: f"{x * 100:.3f}%")
+summary_df['F1_SCORE'] = summary_df['F1_SCORE'].apply(lambda x: f"{x * 100:.3f}%")
 summary_df['F1_QSCORE'] = summary_df['F1_QSCORE'].apply(lambda x: f"{x:.2f}")
 
 summary_df.columns = ['Variant Type', 'Read Model', 'Preset', 'Mean Precision', 'Mean Recall', 'Mean F1 Score', 'Mean F1 Q-Score']

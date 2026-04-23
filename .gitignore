@@ -45,3 +45,4 @@ _site
 .worktrees/
 /public/
 .hugo_build.lock
+.obsidian
