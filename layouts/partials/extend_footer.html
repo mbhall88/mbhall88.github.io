@@ -19,7 +19,7 @@ document.addEventListener("DOMContentLoaded", function() {
 {{- if .IsPage -}}
 <script>
 document.addEventListener("DOMContentLoaded", function() {
-    // 1. Convert footnote numbers to letters and handle duplicates
+    // Convert footnote numbers to letters and handle duplicates
     const refs = document.querySelectorAll('.footnote-ref a');
     const map = new Map();
     let count = 0;
@@ -30,8 +30,8 @@ document.addEventListener("DOMContentLoaded", function() {
             // Assign a new letter (a, b, c...)
             map.set(href, String.fromCharCode(97 + count++));
         }
-        // Replace the number with [letter]
-        ref.innerText = '[' + map.get(href) + ']';
+        // Simply replace the text content (the number) with the letter
+        ref.textContent = map.get(href);
     });
 });
 </script>

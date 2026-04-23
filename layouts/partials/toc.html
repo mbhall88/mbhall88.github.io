@@ -88,15 +88,15 @@
         {{- end -}}
         {{- end }}
 
-        {{- /* CUSTOM: Append References and Footnotes inside the main list */ -}}
-        {{- if .Scratch.Get "citations" }}
-        <li>
-            <a href="#references" aria-label="References">References</a>
-        </li>
-        {{- end }}
+        {{- /* CUSTOM: Append Footnotes and References inside the main list */ -}}
         {{- if findRE "class=\"footnotes\"" .Content }}
         <li>
             <a href="#footnotes" aria-label="Footnotes">Footnotes</a>
+        </li>
+        {{- end }}
+        {{- if .Scratch.Get "citations" }}
+        <li>
+            <a href="#references" aria-label="References">References</a>
         </li>
         {{- end }}
         </ul>

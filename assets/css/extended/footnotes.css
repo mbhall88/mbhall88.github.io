@@ -4,9 +4,15 @@
     vertical-align: super;
 }
 .footnote-ref a {
-    font-size: 0.8rem;
+    font-size: 0.75rem;
     color: var(--primary);
     text-decoration: none;
+}
+.footnote-ref a::before {
+    content: "[";
+}
+.footnote-ref a::after {
+    content: "]";
 }
 .footnote-ref a:hover {
     text-decoration: underline;
