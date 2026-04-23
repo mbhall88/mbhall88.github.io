@@ -5,26 +5,69 @@
     border-radius: var(--radius);
     overflow: hidden;
     background: var(--entry);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.02);
 }
 .share-file-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
     padding: 0.8rem 1.2rem;
-    background: var(--tertiary);
+    background: var(--entry);
+    border-bottom: 1px solid var(--tertiary);
     font-family: monospace;
     font-size: 0.9em;
+    color: var(--primary);
+}
+.share-file-title {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    font-weight: 600;
+}
+.share-file-actions {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
 }
 .share-file-actions a {
-    margin-left: 1rem;
+    display: flex;
+    align-items: center;
+    color: var(--secondary);
+    transition: color 0.2s ease;
     text-decoration: none;
-    font-size: 1.2em;
+}
+.share-file-actions a:hover {
+    color: var(--primary);
 }
 .share-file-box details summary {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
     padding: 0.8rem 1.2rem;
     cursor: pointer;
-    font-weight: bold;
+    font-size: 0.85em;
+    font-weight: 600;
+    color: var(--secondary);
     user-select: none;
+    list-style: none; /* Remove default arrow */
+    background: var(--entry);
+    transition: background 0.2s ease, color 0.2s ease;
+}
+.share-file-box details summary::-webkit-details-marker {
+    display: none; /* Remove default arrow in Safari/Webkit */
+}
+.share-file-box details summary:hover {
+    background: var(--tertiary);
+    color: var(--primary);
+}
+.share-file-box details[open] summary {
+    border-bottom: 1px solid var(--tertiary);
+}
+.share-file-box details summary .summary-chevron {
+    transition: transform 0.3s ease;
+}
+.share-file-box details[open] summary .summary-chevron {
+    transform: rotate(180deg);
 }
 .share-file-box .highlight {
     margin: 0 !important;
