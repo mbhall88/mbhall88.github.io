@@ -27,14 +27,14 @@
     <script>
         document.addEventListener("DOMContentLoaded", function() {
             try {
-                // Hugo unmarshals CSV into an array of maps (objects)
+                // Hugo unmarshals CSV into an array of arrays
                 const rawData = {{ $data | jsonify | safeJS }};
                 
-                // Extract headers from the first object
-                const columns = Object.keys(rawData[0]);
+                // The first array is the header row
+                const columns = rawData[0];
                 
-                // Extract row data
-                const rows = rawData.map(rowObj => Object.values(rowObj));
+                // The remaining arrays are the data rows
+                const rows = rawData.slice(1);
                 
                 const grid = new gridjs.Grid({
                     columns: columns,
