@@ -1,0 +1,21 @@
+{{- $src := .Get "src" -}}
+{{- $lang := .Get "lang" | default (path.Ext $src | strings.TrimPrefix ".") -}}
+{{- $resource := .Page.Resources.GetMatch $src -}}
+
+{{- if $resource -}}
+<div class="share-file-box">
+    <div class="share-file-header">
+        <span class="file-name">📄 {{ $src }}</span>
+        <div class="share-file-actions">
+            <a href="{{ $resource.RelPermalink }}" download title="Download file">💾</a>
+            <a href="https://github.com/mbhall88/mbhall88.github.io/blob/master/content/post/{{ .Page.File.Dir | strings.TrimSuffix "/" }}/{{ $src }}" target="_blank" title="View on GitHub">🐙</a>
+        </div>
+    </div>
+    <details>
+        <summary>Click to preview code</summary>
+        {{ highlight $resource.Content $lang "" }}
+    </details>
+</div>
+{{- else -}}
+    {{- errorf "File not found for sharing: %s" $src -}}
+{{- end -}}
