@@ -11,20 +11,22 @@
     {{- if $caption }}<h4 style="margin-bottom: 1rem;">{{ $caption }}</h4>{{ end -}}
     <div id="grid-{{ .Ordinal }}-{{ $file | anchorize }}"></div>
     <script>
-        new gridjs.Grid({
-            from: (function() {
-                const data = {{ $data | jsonify | safeJS }};
-                return {
-                    columns: Object.keys(data[0]),
-                    data: data.map(row => Object.values(row))
-                };
-            })(),
-            search: true,
-            sort: true,
-            pagination: { limit: 10 },
-            resizable: true,
-            className: { table: 'gridjs-table' }
-        }).render(document.getElementById("grid-{{ .Ordinal }}-{{ $file | anchorize }}"));
+        document.addEventListener("DOMContentLoaded", function() {
+            new gridjs.Grid({
+                from: (function() {
+                    const data = {{ $data | jsonify | safeJS }};
+                    return {
+                        columns: Object.keys(data[0]),
+                        data: data.map(row => Object.values(row))
+                    };
+                })(),
+                search: true,
+                sort: true,
+                pagination: { limit: 10 },
+                resizable: true,
+                className: { table: 'gridjs-table' }
+            }).render(document.getElementById("grid-{{ .Ordinal }}-{{ $file | anchorize }}"));
+        });
     </script>
 </div>
 {{- else -}}
