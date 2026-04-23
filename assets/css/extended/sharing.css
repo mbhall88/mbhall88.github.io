@@ -62,9 +62,16 @@
     min-width: 100px;                 /* Ensure enough space for headers */
 }
 
+.gridjs-thead {
+    display: table-header-group !important; /* Force the header to show */
+}
+
 .gridjs-th {
     font-weight: bold !important;
     background-color: var(--tertiary) !important;
+    color: var(--primary) !important;
+    text-align: left !important;
+    border-bottom: 2px solid var(--primary) !important;
 }
 
 .gridjs-search-input, .gridjs-footer {

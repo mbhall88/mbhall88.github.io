@@ -3,6 +3,7 @@ title: Minimap2 lr:hq preset testing
 date: 2026-04-22T14:16:33+10:00
 draft: false
 math: true
+has_table: true
 tags:
   - minimap2
   - alignment
@@ -49,38 +50,22 @@ I have tried to ensure easy reproducibility with this analysis in case I need to
 ---
 ## Results
 
-The sample-aggregated results paint a very consistent picture.
-
-| Variant Type | Read Model | Preset  | Mean Precision | Mean Recall | Mean F1 Score | Mean F1 Q-Score[^b] |
-| :----------- | :--------- | :------ | :------------- | :---------- | :------------ | ------------------: |
-| SNP          | hac        | lr-hq   | 99.997%        | 99.790%     | 99.892%       |               45.46 |
-| SNP          | hac        | map-ont | 99.995%        | 99.790%     | 99.891%       |               45.27 |
-| SNP          | sup        | lr-hq   | 99.998%        | 99.795%     | 99.895%       |               50.97 |
-| SNP          | sup        | map-ont | 99.999%        | 99.785%     | 99.891%       |               50.74 |
-| INDEL        | hac        | lr-hq   | 99.440%        | 97.697%     | 98.556%       |               24.48 |
-| INDEL        | hac        | map-ont | 99.421%        | 97.646%     | 98.521%       |               24.37 |
-| INDEL        | sup        | lr-hq   | 99.980%        | 98.594%     | 99.281%       |               22.05 |
-| INDEL        | sup        | map-ont | 99.968%        | 98.581%     | 99.268%       |               21.89 |
-| ALL          | hac        | lr-hq   | 99.985%        | 99.739%     | 99.861%       |               32.79 |
-| ALL          | hac        | map-ont | 99.983%        | 99.738%     | 99.860%       |               32.65 |
-| ALL          | sup        | lr-hq   | 99.997%        | 99.770%     | 99.882%       |               35.16 |
-| ALL          | sup        | map-ont | 99.997%        | 99.761%     | 99.878%       |               34.94 |
+{{< csv-table src="aggregated_precision_recall_summaries.csv" caption="Interactive Variant Calling Results" >}}
 
 Across the board, `lr:hq` is a *marginal* improvement. For SNPs, the F1 Q-score sees a bump of about 0.2 to 0.25. For indels, we see a similar bump of about 0.13 to 0.17. A shift this deep in the decimal points might seem trivial, but the ONT is improving so much now that progress is measured by hunting down the last few false calls. These aren't massive, earth-shattering percentage leaps anymore. But for something like bacterial outbreak tracking where a single SNP can make a big difference, squeezing out those last false calls is important.
 
 When looking at the improvement given by `lr:hq` on SNPs, we see that for `hac`, the higher F1 score is driven solely by a small increase in precision (0.002%), with recall remaining the same. In contrast, for `sup`, the higher SNP F1 score comes from a 0.01% increase in the recall. Though there was a *very* small decrease in precision (0.001%).
 
-Indels are a little more clear cut. For both `hac` and `sup` there is an increase in both precision and recall. These results can visualised in Figure 1 (F1 scores) below and Figures S1 (precision) and S2 (recall) in the [Appendix](#appendix).
+Indels are a little more clear cut. For both `hac` and `sup` there is an increase in both precision and recall. These results can visualised in Figure 1 (F1 scores) below and Figures S1 (precision) and S2 (recall) in the [Appendix](#appendix), along with the full results per-sample.
 
 {{< figure src="boxplot_strip_F1_SCORE.png" alt="A boxplot showing F1 score of SNPs and indels" caption="**Figure 1:** F1 score for SNPs (left) and indels (right) for `minimap2` presets `lr:hq` (black) and `map-ont` (orange)." >}}
 
-You can browse the full results per-sample in the [Appendix](#appendix).
 
 ---
 
 ## Conclusion
 
-If you're aligning modern `sup` basecalling (v4.3.0+ models), **`lr:hq` should be the new default.** As always, it is worth doing your own assessment on your own data as I am sure there are edge cases for certain difficult genomes/regions. Though as an overarching finding, it seems to be mainly upside with no real downside on this dataset.
+If you're aligning modern `sup` basecalling (v4.3.0+ models) for variant calling, **`lr:hq` should be your new default.** As always, it is worth doing your own assessment on your own data as I am sure there are edge cases for certain difficult genomes/regions. Though as an overarching finding, it seems to be mainly upside with no real downside on this dataset.
 
 The most surprising finding for me though is the (slight) improvement for the `hac` data. Again, there didn't seem to be any downside to using `lr:hq` for these data.
 
@@ -94,7 +79,6 @@ On a final note, Clair3 is a deep learning-based variant caller. So it is very p
 
 {{< figure src="boxplot_strip_RECALL.png" alt="A boxplot showing recall of SNPs and indels" caption="**Figure S2:** Recall for SNPs (left) and indels (right) for `minimap2` presets `lr:hq` (black) and `map-ont` (orange)." >}}
 
-{{< csv-table src="aggregated_precision_recall_summaries.csv" caption="Interactive Variant Calling Results" >}}
 
 ### Scripts
 
