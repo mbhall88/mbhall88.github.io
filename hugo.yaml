@@ -12,6 +12,14 @@ params:
   ShowCodeCopyButtons: true
   math: true
 
+  # Fix 404s for favicons
+  assets:
+    favicon: ""
+    favicon16x16: ""
+    favicon32x32: ""
+    apple_touch_icon: ""
+    safari_pinned_tab: ""
+
   editPost:
     URL: "https://github.com/mbhall88/mbhall88.github.io/tree/master/content"
     Text: "Suggest Changes" # edit text
@@ -65,14 +73,6 @@ params:
       reactionsEnabled: true
       emitMetadata: false
       theme: "preferred_color_scheme"
-
-  # Fix 404s for favicons
-  assets:
-    favicon: ""
-    favicon16x16: ""
-    favicon32x32: ""
-    apple_touch_icon: ""
-    safari_pinned_tab: ""
 
 menu:
   main:

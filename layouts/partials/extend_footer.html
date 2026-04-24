@@ -8,28 +8,27 @@ document.addEventListener("DOMContentLoaded", function() {
     
     if (statsEl) {
         // Use Shields.io as a CORS-friendly proxy for GoatCounter stats
-        // We add .json to get data instead of an SVG image
         var siteCode = "{{ .Site.Params.analytics.goatcounter.Site }}";
         var url = "https://img.shields.io/goatcounter/endpoint.json?code=" + siteCode + "&path=" + encodeURIComponent(path);
         
         fetch(url)
             .then(response => {
                 if (!response.ok) {
-                    return response.text().then(text => {
-                        throw new Error("Shields.io error (" + response.status + "): " + text);
-                    });
+                    // If Shields.io returns an error (like 404 badge not found)
+                    // it means the page has 0 hits on a new account
+                    statsEl.innerText = "0 views";
+                    return null;
                 }
                 return response.json();
             })
             .then(data => {
-                // Shields.io JSON format for endpoint is { "value": "123 views" }
                 if (data && data.value) {
                     statsEl.innerText = data.value;
                 }
             })
             .catch(err => {
-                console.error("GoatCounter Error:", err.message);
-                statsEl.style.display = "none";
+                console.warn("GoatCounter stats unavailable.");
+                statsEl.innerText = "0 views";
             });
     }
 });
