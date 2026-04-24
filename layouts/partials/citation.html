@@ -7,13 +7,10 @@
     
     <details>
         <summary style="font-size: 0.8em; cursor: pointer; color: var(--secondary);">View BibTeX</summary>
-        <pre style="font-size: 0.8em; margin-top: 0.5rem; background: transparent; padding: 0;">@misc{hall{{ .Date.Format "2006" }}{{ lower (delimit (first 1 (split .File.BaseFileName "-")) "") }},
-  author = {Hall, Michael B.},
-  title = { {{ .Title }} },
-  year = { {{ .Date.Format "2006" }} },
-  howpublished = { \url{ {{ .Permalink }} } },
-  doi = { {{ .Params.doi }} }
-}</pre>
+        <div style="font-size: 0.8em; margin-top: 0.5rem;">
+            {{- $bib := printf "@misc{hall%s%s,\n  author = {Hall, Michael B.},\n  title = { %s },\n  year = { %s },\n  howpublished = { \\url{ %s } },\n  doi = { %s }\n}" (.Date.Format "2006") (lower (delimit (first 1 (split .File.BaseFileName "-")) "")) .Title (.Date.Format "2006") .Permalink .Params.doi -}}
+            {{ highlight $bib "bibtex" "" }}
+        </div>
     </details>
 </div>
 {{- end -}}
