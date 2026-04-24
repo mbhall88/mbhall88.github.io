@@ -7,21 +7,25 @@ document.addEventListener("DOMContentLoaded", function() {
                   document.getElementById('stats-' + path.replace(/\/$/, ''));
     
     if (statsEl) {
-        // Use Shields.io as a CORS-friendly proxy for GoatCounter stats
-        // Endpoint: https://img.shields.io/goatcounter/endpoint?code=mbhall88&path=/post/my-post
         var siteCode = "{{ .Site.Params.analytics.goatcounter.Site }}";
         var url = "https://img.shields.io/goatcounter/endpoint?code=" + siteCode + "&path=" + encodeURIComponent(path);
         
         fetch(url)
-            .then(response => response.json())
+            .then(response => {
+                if (!response.ok) {
+                    return response.text().then(text => {
+                        throw new Error("Shields.io error (" + response.status + "): " + text);
+                    });
+                }
+                return response.json();
+            })
             .then(data => {
                 if (data && data.value) {
-                    // Shields.io returns "123 views" as the value string
                     statsEl.innerText = data.value;
                 }
             })
             .catch(err => {
-                console.warn("GoatCounter stats unavailable via proxy.");
+                console.error("GoatCounter Error:", err.message);
                 statsEl.style.display = "none";
             });
     }
