@@ -94,6 +94,11 @@
             <a href="#footnotes" aria-label="Footnotes">Footnotes</a>
         </li>
         {{- end }}
+        {{- if .Params.doi }}
+        <li>
+            <a href="#cite" aria-label="Cite this post">Cite this post</a>
+        </li>
+        {{- end }}
         {{- if .Scratch.Get "citations" }}
         <li>
             <a href="#references" aria-label="References">References</a>
