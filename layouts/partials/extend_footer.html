@@ -2,16 +2,28 @@
 <script>
 document.addEventListener("DOMContentLoaded", function() {
     var path = window.location.pathname;
-    var url = "https://mbhall88.goatcounter.com/counter/" + encodeURIComponent(path) + ".json";
-    fetch(url)
-        .then(response => response.json())
-        .then(data => {
-            var statsEl = document.getElementById('stats-' + path);
-            if (statsEl && data.count) {
-                statsEl.innerText = data.count + " views";
-            }
-        })
-        .catch(err => console.error("Error fetching GoatCounter stats:", err));
+    // Ensure we handle both with and without trailing slash for the ID
+    var statsEl = document.getElementById('stats-' + path) || 
+                  document.getElementById('stats-' + path + '/') ||
+                  document.getElementById('stats-' + path.replace(/\/$/, ''));
+    
+    if (statsEl) {
+        var url = "https://mbhall88.goatcounter.com/counter/" + encodeURIComponent(path) + ".json";
+        fetch(url)
+            .then(response => response.json())
+            .then(data => {
+                if (data.count) {
+                    // Format number with commas
+                    statsEl.innerText = parseInt(data.count).toLocaleString() + " views";
+                } else {
+                    statsEl.innerText = "0 views";
+                }
+            })
+            .catch(err => {
+                console.error("Error fetching GoatCounter stats:", err);
+                statsEl.innerText = ""; // Hide if error
+            });
+    }
 });
 </script>
 {{- end -}}

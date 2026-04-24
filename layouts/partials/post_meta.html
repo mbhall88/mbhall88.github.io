@@ -1,27 +1,19 @@
-{{- $scratch := newScratch }}
-
 {{- if not .Date.IsZero -}}
-{{- $scratch.Add "meta" (slice (printf "<span title='%s'>%s</span>" (.Date) (.Date.Format (default "January 2, 2006" .Site.Params.DateFormat)))) }}
+<span title='{{ .Date }}'>{{ .Date.Format (default "January 2, 2006" .Site.Params.DateFormat) }}</span>
 {{- end -}}
 
 {{- if (.Param "ShowReadingTime") -}}
-{{- $scratch.Add "meta" (slice (i18n "read_time" .ReadingTime | default (printf "%d min" .ReadingTime))) }}
+&nbsp;·&nbsp;<span>{{ i18n "read_time" .ReadingTime | default (printf "%d min" .ReadingTime) }}</span>
 {{- end -}}
 
 {{- if (.Param "ShowWordCount") -}}
-{{- $scratch.Add "meta" (slice (i18n "words" .WordCount | default (printf "%d words" .WordCount))) }}
+&nbsp;·&nbsp;<span>{{ i18n "words" .WordCount | default (printf "%d words" .WordCount) }}</span>
 {{- end -}}
 
-{{- with (partial "author.html" .) }}
-{{- $scratch.Add "meta" (slice .) }}
+{{- with (partial "author.html" .) -}}
+&nbsp;·&nbsp;<span>{{ . }}</span>
 {{- end -}}
 
-{{- /* Add GoatCounter Views */ -}}
 {{- if and .Site.Params.analytics.goatcounter .IsPage (eq .Type "post") -}}
-{{- $views := printf "<span id='stats-%s' class='goatcounter-views'>... views</span>" .RelPermalink -}}
-{{- $scratch.Add "meta" (slice $views) -}}
-{{- end -}}
-
-{{- with ($scratch.Get "meta") }}
-{{- delimit . "&nbsp;·&nbsp;" | safeHTML -}}
+&nbsp;·&nbsp;<span id="stats-{{ .RelPermalink }}" class="goatcounter-views">... views</span>
 {{- end -}}

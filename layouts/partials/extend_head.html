@@ -9,3 +9,7 @@
 <link href="https://cdn.jsdelivr.net/npm/gridjs/dist/theme/mermaid.min.css" rel="stylesheet" />
 <script defer src="https://cdn.jsdelivr.net/npm/gridjs/dist/gridjs.umd.js" crossorigin="anonymous"></script>
 {{- end -}}
+
+{{- if .Site.Params.analytics.goatcounter -}}
+<script data-goatcounter="https://{{ .Site.Params.analytics.goatcounter.Site }}.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
+{{- end -}}
