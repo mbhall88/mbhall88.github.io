@@ -8,7 +8,10 @@ document.addEventListener("DOMContentLoaded", function() {
     
     if (statsEl) {
         var siteCode = "{{ .Site.Params.analytics.goatcounter.Site }}";
-        var url = "https://img.shields.io/goatcounter/endpoint.json?code=" + siteCode + "&path=" + encodeURIComponent(path);
+        // Use a cache-buster query param and ensure path is cleaned
+        // Shields.io respects the upstream cache but a fresh request helps
+        var cleanPath = path.replace(/\/$/, ''); // GoatCounter usually normalizes paths
+        var url = "https://img.shields.io/goatcounter/endpoint.json?code=" + siteCode + "&path=" + encodeURIComponent(cleanPath);
         
         fetch(url)
             .then(response => {
@@ -17,7 +20,6 @@ document.addEventListener("DOMContentLoaded", function() {
             })
             .then(data => {
                 if (data && data.value) {
-                    // Handle Shields.io "badge not found" response for new pages/accounts
                     if (data.value.toLowerCase().includes("not found")) {
                         statsEl.innerText = "0 views";
                     } else {
