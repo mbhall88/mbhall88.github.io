@@ -2,13 +2,13 @@
 <div class="citation-container" style="margin-top: 3rem; padding: 1.5rem; background: var(--code-bg); border-radius: 8px; border: 1px solid var(--tertiary);">
     <h3 id="cite">Cite this post</h3>
     <p style="font-size: 0.9em; margin-bottom: 1rem;">
-        Hall, M. B. ({{ .Date.Format "2006" }}). {{ .Title }}. <i>mbhall88.github.io</i>. doi:{{ .Params.doi }}
+        Hall, M. B. ({{ .Date.Format "2006" }}). {{ .Title }}. <i>mbhall88.github.io</i>. Zenodo. doi:{{ .Params.doi }}
     </p>
     
     <details>
         <summary style="font-size: 0.8em; cursor: pointer; color: var(--secondary);">View BibTeX</summary>
         <div style="font-size: 0.8em; margin-top: 0.5rem;">
-            {{- $bib := printf "@misc{hall%s%s,\n  author = {Hall, Michael B.},\n  title = { %s },\n  year = { %s },\n  howpublished = { \\url{ %s } },\n  doi = { %s }\n}" (.Date.Format "2006") (lower (delimit (first 1 (split .File.BaseFileName "-")) "")) .Title (.Date.Format "2006") .Permalink .Params.doi -}}
+            {{- $bib := printf "@misc{hall%s%s,\n  author = {Hall, Michael B.},\n  title = { %s },\n  year = { %s },\n  howpublished = { \\url{ %s } },\n  publisher = { Zenodo },\n  doi = { %s }\n}" (.Date.Format "2006") (lower (delimit (first 1 (split .File.BaseFileName "-")) "")) .Title (.Date.Format "2006") .Permalink .Params.doi -}}
             {{ highlight $bib "bibtex" "" }}
         </div>
     </details>
