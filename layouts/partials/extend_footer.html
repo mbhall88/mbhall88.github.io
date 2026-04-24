@@ -7,29 +7,39 @@ document.addEventListener("DOMContentLoaded", function() {
                   document.getElementById('stats-' + path.replace(/\/$/, ''));
     
     if (statsEl) {
+        // Fetch directly from GoatCounter now that public access is enabled
         var siteCode = "{{ .Site.Params.analytics.goatcounter.Site }}";
-        // Use a cache-buster query param and ensure path is cleaned
-        // Shields.io respects the upstream cache but a fresh request helps
-        var cleanPath = path.replace(/\/$/, ''); // GoatCounter usually normalizes paths
-        var url = "https://img.shields.io/goatcounter/endpoint.json?code=" + siteCode + "&path=" + encodeURIComponent(cleanPath);
+        var url = "https://" + siteCode + ".goatcounter.com/counter/" + encodeURIComponent(path) + ".json";
         
         fetch(url)
             .then(response => {
-                if (!response.ok) throw new Error('Network error');
+                if (!response.ok) throw new Error('Not found or CORS error');
                 return response.json();
             })
             .then(data => {
-                if (data && data.value) {
-                    if (data.value.toLowerCase().includes("not found")) {
-                        statsEl.innerText = "0 views";
-                    } else {
-                        statsEl.innerText = data.value;
-                    }
+                if (data && data.count) {
+                    statsEl.innerText = parseInt(data.count).toLocaleString() + " views";
+                } else {
+                    statsEl.innerText = "0 views";
                 }
             })
             .catch(err => {
-                console.warn("GoatCounter stats unavailable.");
-                statsEl.innerText = "0 views";
+                // Fallback for new pages or errors
+                console.warn("GoatCounter direct fetch failed, trying path without trailing slash...");
+                var altPath = path.replace(/\/$/, '');
+                if (altPath !== path) {
+                    var altUrl = "https://" + siteCode + ".goatcounter.com/counter/" + encodeURIComponent(altPath) + ".json";
+                    fetch(altUrl)
+                        .then(r => r.json())
+                        .then(d => {
+                            if (d && d.count) statsEl.innerText = parseInt(d.count).toLocaleString() + " views";
+                        })
+                        .catch(e => {
+                            statsEl.innerText = "0 views";
+                        });
+                } else {
+                    statsEl.innerText = "0 views";
+                }
             });
     }
 });
