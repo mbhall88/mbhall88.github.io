@@ -7,13 +7,13 @@
 {{- if $csv -}}
 {{- $data := $csv.Content | transform.Unmarshal -}}
 {{- if gt (len $data) 0 -}}
-<div class="csv-table-wrapper" style="margin: 2rem 0;">
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
-        {{- if $caption }}<h4 style="margin: 0;">{{ $caption }}</h4>{{ end -}}
+<div class="csv-table-wrapper">
+    <div class="csv-table-top-bar">
+        {{- if $caption }}<h4 class="csv-table-caption">{{ $caption }}</h4>{{ end -}}
         
-        <div style="font-size: 0.9em;">
-            <label for="limit-{{ .Ordinal }}">Rows per page: </label>
-            <select id="limit-{{ .Ordinal }}" style="background: var(--entry); color: var(--primary); border: 1px solid var(--tertiary); padding: 0.2rem; border-radius: var(--radius);">
+        <div class="csv-table-controls">
+            <label for="limit-{{ .Ordinal }}">Rows per page:</label>
+            <select id="limit-{{ .Ordinal }}" class="csv-table-select">
                 <option value="10">10</option>
                 <option value="25">25</option>
                 <option value="50">50</option>
