@@ -7,23 +7,22 @@ document.addEventListener("DOMContentLoaded", function() {
                   document.getElementById('stats-' + path.replace(/\/$/, ''));
     
     if (statsEl) {
-        // Use Shields.io as a CORS-friendly proxy for GoatCounter stats
         var siteCode = "{{ .Site.Params.analytics.goatcounter.Site }}";
         var url = "https://img.shields.io/goatcounter/endpoint.json?code=" + siteCode + "&path=" + encodeURIComponent(path);
         
         fetch(url)
             .then(response => {
-                if (!response.ok) {
-                    // If Shields.io returns an error (like 404 badge not found)
-                    // it means the page has 0 hits on a new account
-                    statsEl.innerText = "0 views";
-                    return null;
-                }
+                if (!response.ok) throw new Error('Network error');
                 return response.json();
             })
             .then(data => {
                 if (data && data.value) {
-                    statsEl.innerText = data.value;
+                    // Handle Shields.io "badge not found" response for new pages/accounts
+                    if (data.value.toLowerCase().includes("not found")) {
+                        statsEl.innerText = "0 views";
+                    } else {
+                        statsEl.innerText = data.value;
+                    }
                 }
             })
             .catch(err => {
