@@ -66,6 +66,14 @@ params:
       emitMetadata: false
       theme: "preferred_color_scheme"
 
+  # Fix 404s for favicons
+  assets:
+    favicon: ""
+    favicon16x16: ""
+    favicon32x32: ""
+    apple_touch_icon: ""
+    safari_pinned_tab: ""
+
 menu:
   main:
     - identifier: posts

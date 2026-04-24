@@ -7,8 +7,10 @@ document.addEventListener("DOMContentLoaded", function() {
                   document.getElementById('stats-' + path.replace(/\/$/, ''));
     
     if (statsEl) {
+        // Use Shields.io as a CORS-friendly proxy for GoatCounter stats
+        // We add .json to get data instead of an SVG image
         var siteCode = "{{ .Site.Params.analytics.goatcounter.Site }}";
-        var url = "https://img.shields.io/goatcounter/endpoint?code=" + siteCode + "&path=" + encodeURIComponent(path);
+        var url = "https://img.shields.io/goatcounter/endpoint.json?code=" + siteCode + "&path=" + encodeURIComponent(path);
         
         fetch(url)
             .then(response => {
@@ -20,6 +22,7 @@ document.addEventListener("DOMContentLoaded", function() {
                 return response.json();
             })
             .then(data => {
+                // Shields.io JSON format for endpoint is { "value": "123 views" }
                 if (data && data.value) {
                     statsEl.innerText = data.value;
                 }
