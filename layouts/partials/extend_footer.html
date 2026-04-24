@@ -2,7 +2,6 @@
 <script>
 document.addEventListener("DOMContentLoaded", function() {
     var path = window.location.pathname;
-    // Ensure we handle both with and without trailing slash for the ID
     var statsEl = document.getElementById('stats-' + path) || 
                   document.getElementById('stats-' + path + '/') ||
                   document.getElementById('stats-' + path.replace(/\/$/, ''));
@@ -10,18 +9,21 @@ document.addEventListener("DOMContentLoaded", function() {
     if (statsEl) {
         var url = "https://mbhall88.goatcounter.com/counter/" + encodeURIComponent(path) + ".json";
         fetch(url)
-            .then(response => response.json())
+            .then(response => {
+                if (!response.ok) throw new Error('CORS or Network error');
+                return response.json();
+            })
             .then(data => {
-                if (data.count) {
-                    // Format number with commas
+                if (data && data.count) {
                     statsEl.innerText = parseInt(data.count).toLocaleString() + " views";
                 } else {
                     statsEl.innerText = "0 views";
                 }
             })
             .catch(err => {
-                console.error("Error fetching GoatCounter stats:", err);
-                statsEl.innerText = ""; // Hide if error
+                // If blocked by adblocker or CORS fails, just hide the placeholder
+                console.warn("GoatCounter stats blocked or unavailable.");
+                statsEl.style.display = "none";
             });
     }
 });
