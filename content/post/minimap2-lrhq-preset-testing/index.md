@@ -4,6 +4,7 @@ date: 2026-04-22T14:16:33+10:00
 draft: false
 math: true
 has_table: true
+doi: "10.5281/zenodo.19717304"
 tags:
   - minimap2
   - alignment
