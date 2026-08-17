@@ -35,6 +35,8 @@ params:
     buttons:
       - name: Posts
         url: /post/
+      - name: Talks
+        url: /talks/
       - name: GitHub
         url: https://github.com/mbhall88
       - name: CV
@@ -80,6 +82,10 @@ menu:
       name: Posts
       url: /post/
       weight: 10
+    - identifier: talks
+      name: Talks
+      url: /talks/
+      weight: 20
 
 mediaTypes:
   text/x-bibliography:
