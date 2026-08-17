@@ -1,0 +1,706 @@
+<!DOCTYPE html>
+<html lang="en-AU">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Persistent interactive jobs on Bunya</title>
+<meta name="description" content="Interactive sessions on Bunya that survive logout, dropped wifi and closed laptops — using tmux inside a Slurm batch job.">
+<style>
+:root{
+  --n0:#2E3440; --n1:#3B4252; --n2:#434C5E; --n3:#4C566A;
+  --n4:#D8DEE9; --n5:#E5E9F0; --n6:#ECEFF4;
+  --n7:#8FBCBB; --n8:#88C0D0; --n9:#81A1C1; --n10:#5E81AC;
+  --n11:#BF616A; --n12:#D08770; --n13:#EBCB8B; --n14:#A3BE8C; --n15:#B48EAD;
+  --mono:'SFMono-Regular',ui-monospace,'JetBrains Mono','Fira Code',Menlo,Consolas,monospace;
+  --sans:-apple-system,BlinkMacSystemFont,'Segoe UI','Inter',Helvetica,Arial,sans-serif;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0;height:100%}
+body{
+  background:var(--n0); color:var(--n5); font-family:var(--sans);
+  -webkit-font-smoothing:antialiased; overflow:hidden;
+}
+body.ref{overflow:auto}
+
+/* ---------- stage ---------- */
+#stage{position:absolute;top:0;left:0;width:1280px;height:720px;transform-origin:top left}
+body.ref #stage{position:static;width:auto;height:auto;transform:none!important;max-width:960px;margin:0 auto;padding:0 20px 120px}
+
+.slide{
+  position:absolute;inset:0;padding:52px 64px 60px;display:none;
+  flex-direction:column;overflow:hidden;
+}
+.slide.on{display:flex}
+body.ref .slide{
+  position:static;display:flex;height:auto;min-height:0;
+  padding:44px 0 40px;border-top:1px solid var(--n2);
+}
+body.ref .slide:first-of-type{border-top:none}
+
+/* ---------- typography ---------- */
+h1{font-size:52px;line-height:1.1;margin:0 0 14px;color:var(--n6);letter-spacing:-.02em;font-weight:700}
+h2{font-size:36px;line-height:1.15;margin:0 0 6px;color:var(--n8);letter-spacing:-.015em;font-weight:650}
+h3{font-size:19px;margin:22px 0 8px;color:var(--n7);font-weight:650;letter-spacing:.01em}
+.slide > h2 + .sub{font-size:18px;color:var(--n4);opacity:.8;margin:0 0 20px}
+p{font-size:19px;line-height:1.5;margin:0 0 12px;color:var(--n5)}
+ul{margin:0 0 12px;padding-left:22px}
+li{font-size:18px;line-height:1.5;margin-bottom:8px;color:var(--n5)}
+li::marker{color:var(--n9)}
+strong{color:var(--n6);font-weight:650}
+em{color:var(--n13);font-style:normal;font-weight:600}
+a{color:var(--n8)}
+.small{font-size:15px;color:var(--n4);opacity:.75}
+.eyebrow{font-size:13px;letter-spacing:.16em;text-transform:uppercase;color:var(--n10);font-weight:700;margin:0 0 12px}
+.kbd{
+  font-family:var(--mono);font-size:.86em;background:var(--n1);border:1px solid var(--n3);
+  border-bottom-width:2px;border-radius:5px;padding:1px 6px;color:var(--n13);white-space:nowrap;
+}
+code.i{font-family:var(--mono);font-size:.88em;background:var(--n1);border-radius:4px;padding:1px 5px;color:var(--n7)}
+
+/* ---------- code blocks ---------- */
+.codewrap{position:relative;margin:0 0 14px}
+pre{
+  font-family:var(--mono);font-size:15px;line-height:1.55;background:#272C36;
+  border:1px solid var(--n2);border-left:3px solid var(--n10);border-radius:8px;
+  padding:14px 56px 14px 16px;margin:0;overflow-x:auto;color:var(--n5);white-space:pre;
+}
+pre.sm{font-size:13.5px;line-height:1.5}
+body:not(.ref) pre.tall{max-height:468px;overflow-y:auto}
+.codewrap .copy{
+  position:absolute;top:8px;right:8px;font-family:var(--sans);font-size:11px;font-weight:650;
+  letter-spacing:.05em;text-transform:uppercase;background:var(--n2);color:var(--n4);
+  border:1px solid var(--n3);border-radius:5px;padding:4px 8px;cursor:pointer;opacity:0;transition:opacity .15s,background .15s
+}
+.codewrap:hover .copy,.codewrap .copy:focus{opacity:1}
+.codewrap .copy:hover{background:var(--n10);color:var(--n6)}
+.codewrap .copy.done{background:var(--n14);color:var(--n0);opacity:1}
+body.ref .codewrap .copy{opacity:.55}
+.c{color:var(--n3);font-style:italic}
+.s{color:var(--n14)}
+.v{color:var(--n15)}
+.k{color:var(--n9)}
+.cmd{color:var(--n8);font-weight:600}
+.f{color:var(--n13)}
+
+/* ---------- layout helpers ---------- */
+.cols{display:grid;grid-template-columns:1fr 1fr;gap:26px;align-items:start}
+.cols.w{grid-template-columns:1.15fr .85fr}
+.grow{flex:1;min-height:0}
+.note{
+  border-left:3px solid var(--n13);background:rgba(235,203,139,.07);
+  padding:10px 14px;border-radius:0 6px 6px 0;margin:0 0 12px
+}
+.note.warn{border-color:var(--n11);background:rgba(191,97,106,.08)}
+.note.good{border-color:var(--n14);background:rgba(163,190,140,.07)}
+.note p,.note li{font-size:16px;margin-bottom:4px}
+.note p:last-child{margin-bottom:0}
+dl{margin:0}
+dt{font-family:var(--mono);font-size:14.5px;color:var(--n13);margin-top:11px}
+dd{margin:2px 0 0;font-size:16.5px;line-height:1.45;color:var(--n5)}
+
+/* ---------- diagram ---------- */
+.diag{display:flex;align-items:stretch;gap:14px;margin:8px 0 16px}
+.box{
+  flex:1;border:1px solid var(--n3);border-radius:10px;padding:14px 16px;background:var(--n1);
+}
+.box.hi{border-color:var(--n8);background:rgba(136,192,208,.09)}
+.box h4{margin:0 0 6px;font-size:15px;color:var(--n8);letter-spacing:.03em;text-transform:uppercase;font-weight:700}
+.box p{font-size:15px;margin:0 0 4px;line-height:1.4}
+.box .small{font-size:13.5px}
+.arrow{display:flex;align-items:center;color:var(--n3);font-size:26px;font-weight:300}
+
+/* ---------- chrome ---------- */
+#bar{position:fixed;top:0;left:0;height:3px;background:var(--n8);width:0;z-index:50;transition:width .18s}
+body.ref #bar{display:none}
+#chrome{
+  position:fixed;bottom:14px;right:16px;display:flex;gap:8px;align-items:center;z-index:60;
+  font-size:12px;font-family:var(--sans)
+}
+#chrome button{
+  background:var(--n1);border:1px solid var(--n3);color:var(--n4);border-radius:6px;
+  padding:6px 11px;cursor:pointer;font-size:12px;font-weight:650;font-family:inherit
+}
+#chrome button:hover{background:var(--n2);color:var(--n6)}
+#count{color:var(--n3);font-variant-numeric:tabular-nums;padding:0 4px}
+body.ref #count,body.ref #nav{display:none}
+#modeBtn{background:var(--n10)!important;color:var(--n6)!important;border-color:var(--n10)!important}
+.slidenum{display:none}
+body.ref .slidenum{
+  display:block;position:static;margin:0 0 10px;order:-1;
+  font-size:12px;color:var(--n3);font-family:var(--mono);letter-spacing:.08em
+}
+#hint{
+  position:fixed;bottom:14px;left:16px;font-size:11.5px;color:var(--n3);z-index:60;
+}
+body.ref #hint{display:none}
+
+/* title slide */
+.title{justify-content:center;align-items:flex-start;text-align:left}
+.title .rule{width:64px;height:4px;background:var(--n8);border-radius:2px;margin:0 0 26px}
+.title p{font-size:22px;color:var(--n4);max-width:820px}
+.byline{margin-top:34px;font-size:16px;color:var(--n3)}
+
+@media print{
+  body,body.ref{overflow:visible;background:#fff}
+  #chrome,#hint,#bar,.copy{display:none!important}
+  #stage{transform:none!important;position:static;max-width:none;padding:0}
+  .slide{position:static!important;display:flex!important;page-break-after:always;height:auto;border:none;color:#000;zoom:1!important}
+  .slidenum{display:block!important;position:static;order:-1;margin:0 0 8px}
+}
+</style>
+</head>
+<body>
+<div id="bar"></div>
+<div id="stage">
+
+<!-- 1 -->
+<section class="slide title">
+  <div class="rule"></div>
+  <h1>Interactive jobs on Bunya<br>that don't die when you do</h1>
+  <p>Close your laptop, lose your wifi, quit VS Code — come back tomorrow and your session is exactly where you left it.</p>
+  <div class="byline">Michael Hall &nbsp;·&nbsp; group meeting &nbsp;·&nbsp; ~5 minutes</div>
+</section>
+
+<!-- 2 -->
+<section class="slide">
+  <div class="eyebrow">The problem</div>
+  <h2>Interactive sessions are fragile</h2>
+  <p class="sub">The normal way to get a shell on a compute node:</p>
+  <pre>srun --pty bash    # or the "interactive" button in Open OnDemand</pre>
+  <pre>ssubmit -i -t 1d -m 32g</pre>
+  <p>This works right up until any of the following happens:</p>
+  <ul>
+    <li>Your laptop goes to sleep, or you walk to another building</li>
+    <li>The wifi drops for three seconds</li>
+    <li>You close VS Code, or VS Code decides to reload the window</li>
+    <li>You want to go home while something is still running</li>
+  </ul>
+  <div class="note warn"><p><strong>Your shell is a child of the SSH connection.</strong> Kill the connection, kill the shell, kill everything running in it. Two hours of an assembly, gone.</p></div>
+</section>
+
+<!-- 3 -->
+<section class="slide">
+  <div class="eyebrow">The fix</div>
+  <h2>Put the session inside a batch job</h2>
+  <p class="sub">Three moving parts, and you only ever type two commands.</p>
+  <div class="diag">
+    <div class="box">
+      <h4>Your laptop</h4>
+      <p>Terminal or VS Code</p>
+      <p class="small">Disposable. Can disappear at any time.</p>
+    </div>
+    <div class="arrow">→</div>
+    <div class="box">
+      <h4>Bunya login node</h4>
+      <p>You SSH here</p>
+      <p class="small">Also disposable — you just pass through it.</p>
+    </div>
+    <div class="arrow">→</div>
+    <div class="box hi">
+      <h4>Compute node</h4>
+      <p>A <em>batch</em> job whose only task is to run a tmux server, forever</p>
+      <p class="small">Slurm does not care whether you are connected.</p>
+    </div>
+  </div>
+  <ul>
+    <li>A <strong>batch</strong> job (not an interactive one) starts a tmux server and then sleeps</li>
+    <li>Your shells live inside tmux, on the compute node, in the job's CPU and memory allocation</li>
+    <li>You <em>attach</em> and <em>detach</em> whenever you like, from any login node</li>
+  </ul>
+</section>
+
+<!-- 4 -->
+<section class="slide">
+  <div class="eyebrow">Crash course 1 of 2</div>
+  <h2>What tmux actually is</h2>
+  <p>tmux is a program that runs <strong>on the server</strong> and holds your shells for you. Your shell becomes a child of tmux instead of a child of your SSH connection — so when the connection dies, the shell doesn't notice.</p>
+  <p>It also gives you multiple windows and split panes over a single connection, which is a nice bonus.</p>
+  <h3>The four commands that are 90% of tmux</h3>
+  <pre>tmux new -s work       # start a new session called "work"
+tmux ls                # list sessions that exist
+tmux attach -t work    # reattach to it
+                       # Ctrl-b then d  =  detach and leave it running</pre>
+  <div class="note good"><p><strong>Detaching is not quitting.</strong> <span class="kbd">Ctrl-b</span> <span class="kbd">d</span> walks away and leaves everything running. Typing <code class="i">exit</code> actually closes the shell.</p></div>
+</section>
+
+<!-- 5 -->
+<section class="slide">
+  <div class="eyebrow">Crash course 2 of 2</div>
+  <h2>The keys worth memorising</h2>
+  <p class="sub">Every tmux command is: press <span class="kbd">Ctrl-b</span>, let go, then press one more key.</p>
+  <div class="cols">
+    <div>
+      <dl>
+        <dt>Ctrl-b  d</dt><dd>Detach — leave it all running</dd>
+        <dt>Ctrl-b  c</dt><dd>New window (like a browser tab)</dd>
+        <dt>Ctrl-b  n / p</dt><dd>Next / previous window</dd>
+        <dt>Ctrl-b  1 2 3</dt><dd>Jump straight to a window</dd>
+      </dl>
+    </div>
+    <div>
+      <dl>
+        <dt>Ctrl-b  %</dt><dd>Split the pane left/right</dd>
+        <dt>Ctrl-b  "</dt><dd>Split the pane top/bottom</dd>
+        <dt>Ctrl-b  ← → ↑ ↓</dt><dd>Move between panes</dd>
+        <dt>Ctrl-b  z</dt><dd>Zoom one pane fullscreen, and back</dd>
+        <dt>Ctrl-b  [</dt><dd>Scroll back through output (<span class="kbd">q</span> to exit)</dd>
+      </dl>
+    </div>
+  </div>
+  <h3>Strongly recommended if you like your mouse</h3>
+  <pre>echo 'set -g mouse on' &gt;&gt; ~/.tmux.conf</pre>
+  <p class="small">Now you can click between panes, drag the borders to resize, and scroll with the wheel.</p>
+</section>
+
+<!-- 6 -->
+<section class="slide">
+  <div class="eyebrow">Setup — do this once</div>
+  <h2>Two functions to drop in</h2>
+  <p class="sub">Paste into <code class="i">~/.bashrc</code>, <code class="i">~/.zshrc</code>, <code class="i">~/.aliases</code> — wherever you keep this sort of thing — then <code class="i">source</code> that file. <em>Everything in this talk runs in both bash and zsh.</em></p>
+  <pre class="sm">TMUX_JOB_NAME="tmuxjob"    # "interactive" collides with other people's jobs
+TMUX_JOB_CPUS=8
+
+# NOT $SHELL - that is your /etc/passwd shell, which is bash on Bunya
+# even if zsh is what you actually use
+if [ -n "$ZSH_VERSION" ]; then TMUX_JOB_SHELL="zsh"; else TMUX_JOB_SHELL="bash"; fi
+
+start_tmux_job() {                                  # submit the job
+    echo "[INFO] Submitting interactive tmux job..."
+    # SSUBMIT_* are only defaults - passing -m/-t to the function still wins
+    SSUBMIT_MEMORY=32g SSUBMIT_TIME=1d \
+        ssubmit "$@" "$TMUX_JOB_NAME" \
+        "tmux new-session -d -s worker $TMUX_JOB_SHELL -l; while tmux has-session -t worker 2>/dev/null; do sleep 30; done" \
+        -- -c "$TMUX_JOB_CPUS"
+    echo "[INFO] Job submitted. Wait a moment, then type 'join_tmux_job'."
+}
+
+join_tmux_job() {                                   # attach to it
+    local target_job
+    target_job=$(squeue -u "$USER" -n "$TMUX_JOB_NAME" -h -t RUNNING -o "%i" | head -n 1)
+    if [ -z "$target_job" ]; then
+        echo "[ERROR] No running '$TMUX_JOB_NAME' job found." &gt;&amp;2
+        return 1
+    fi
+    echo "[INFO] Attaching to tmux on worker node (Job ID: $target_job)..."
+    srun --jobid="$target_job" --overlap --pty tmux attach-session -t worker
+}</pre>
+</section>
+
+<!-- 7 -->
+<section class="slide">
+  <div class="eyebrow">Daily use</div>
+  <h2>The whole workflow</h2>
+  <pre>start_tmux_job -m 32g -t 3d     # once. 32 GB of RAM, 3 day walltime
+squeue                          # wait until State is RUNNING (a few seconds, usually)
+join_tmux_job                   # you are now on a compute node, inside tmux
+
+# ... do your work: run things, edit things, leave things running ...
+
+                                # Ctrl-b then d  -> detach
+                                # close the laptop, go home, get on a plane
+
+join_tmux_job                   # tomorrow: everything exactly as you left it
+
+tmux kill-session -t worker     # finished for good - this also ends the Slurm job</pre>
+  <div class="note"><p>That's it. <code class="i">start_tmux_job</code> once, then <code class="i">join_tmux_job</code> every time you sit down.</p></div>
+  <div class="note good"><p><strong>Killing the tmux session releases the node</strong> within about 30 seconds — you don't have to remember a <code class="i">scancel</code>. <code class="i">scancel</code> still works if you'd rather.</p></div>
+</section>
+
+<!-- 8 -->
+<section class="slide">
+  <div class="eyebrow">How it works</div>
+  <h2>start_tmux_job, line by line</h2>
+  <pre class="sm">SSUBMIT_MEMORY=32g SSUBMIT_TIME=1d ssubmit "$@" "$TMUX_JOB_NAME" \
+    "tmux new-session -d -s worker $TMUX_JOB_SHELL -l; while tmux has-session -t worker 2>/dev/null; do sleep 30; done" \
+    -- -c "$TMUX_JOB_CPUS"</pre>
+  <dl>
+    <dt>SSUBMIT_MEMORY / SSUBMIT_TIME</dt><dd>ssubmit's own defaults are <strong>1 GB and 1 day</strong>, which with 8 CPUs is not much. These set better ones. They're only defaults, so <code class="i">start_tmux_job -m 64g -t 3d</code> still overrides them.</dd>
+    <dt>"$@"</dt><dd>Anything you pass to the function lands here.</dd>
+    <dt>"$TMUX_JOB_NAME"</dt><dd>The job <em>name</em>, not a flag — and a variable, so all three functions agree on it.</dd>
+    <dt>tmux new-session -d -s worker $TMUX_JOB_SHELL -l</dt><dd><code class="i">-d</code> means "detached": create the session but attach nothing, which is the only thing that makes sense in a batch job. The shell is named explicitly because tmux otherwise takes it from <code class="i">$SHELL</code>.</dd>
+    <dt>while tmux has-session ...</dt><dd>Keeps the job alive — without something running, Slurm reclaims the node instantly. It also means the job <em>ends</em> when you kill the tmux session, instead of idling until walltime.</dd>
+    <dt>-- -c "$TMUX_JOB_CPUS"</dt><dd>Everything after <code class="i">--</code> goes straight to sbatch.</dd>
+  </dl>
+</section>
+
+<!-- 9 -->
+<section class="slide">
+  <div class="eyebrow">How it works</div>
+  <h2>join_tmux_job, line by line</h2>
+  <pre>squeue -u "$USER" -n "$TMUX_JOB_NAME" -h -t RUNNING -o "%i" | head -n 1</pre>
+  <p class="small" style="margin-top:-4px">Find the job ID: my jobs (<code class="i">-u</code>), named <code class="i">tmuxjob</code> (<code class="i">-n</code>), currently RUNNING (<code class="i">-t</code>), no header (<code class="i">-h</code>), print only the ID (<code class="i">-o "%i"</code>).</p>
+  <pre>srun --jobid="$target_job" --overlap --pty tmux attach-session -t worker</pre>
+  <dl>
+    <dt>--jobid=&lt;ID&gt;</dt><dd>Runs a new <em>step</em> inside an allocation you already hold. No new job, no new queue wait — it's instant.</dd>
+    <dt>--overlap</dt><dd>The magic word. Without it Slurm refuses, because the batch step already holds all the resources. <code class="i">--overlap</code> says "share them".</dd>
+    <dt>--pty</dt><dd>Give me a proper interactive terminal.</dd>
+  </dl>
+  <div class="note good"><p><strong>Everything you run inside that tmux uses the job's CPUs and memory</strong>, not the login node's. So this isn't just about persistence — it's also the correct way to run anything heavy interactively.</p></div>
+</section>
+
+<!-- 10 -->
+<section class="slide">
+  <div class="eyebrow">For the VS Code crowd</div>
+  <h2>Using this from VS Code</h2>
+  <ul>
+    <li>Remote-SSH into Bunya as you already do, open a terminal (<span class="kbd">Ctrl-`</span>), and run <code class="i">join_tmux_job</code>. That's the whole integration.</li>
+    <li>The file explorer stays pointed at the login node — that's fine, <code class="i">/home</code> and <code class="i">/scratch</code> are the same filesystem from the compute node.</li>
+    <li><strong>Anything you run in a plain VS Code terminal is running on the login node.</strong> Run it inside the tmux job instead.</li>
+  </ul>
+  <div class="note warn"><p><strong>Gotcha:</strong> <span class="kbd">Ctrl-b</span> is a VS Code shortcut (toggle sidebar), so VS Code eats it before tmux sees it. Two fixes — pick one.</p></div>
+  <div class="cols">
+    <div>
+      <p class="small"><strong>Let the terminal have it</strong> — VS Code settings.json:</p>
+      <pre class="sm">"terminal.integrated.commandsToSkipShell": [
+  "workbench.action.toggleSidebarVisibility"
+]</pre>
+    </div>
+    <div>
+      <p class="small"><strong>Or move the tmux prefix</strong> — <code class="i">~/.tmux.conf</code> on Bunya:</p>
+      <pre class="sm">unbind C-b
+set -g prefix C-a
+bind C-a send-prefix</pre>
+    </div>
+  </div>
+</section>
+
+<!-- 11 -->
+<section class="slide">
+  <div class="eyebrow">Read this before you email me</div>
+  <h2>Gotchas</h2>
+  <ul>
+    <li><strong>The walltime is still real.</strong> When <code class="i">-t 3d</code> is up, Slurm kills the job and tmux goes with it. Nothing you left running survives.</li>
+    <li><strong>It still holds the node while you're away.</strong> Detaching doesn't release anything — only killing the tmux session (or the walltime) does. Don't leave a 64 GB job sitting idle for a fortnight.</li>
+    <li><strong>One <code class="i">tmuxjob</code> at a time.</strong> Two of them and <code class="i">join_tmux_job</code> silently takes the first one it finds.</li>
+    <li><strong>Log files land where you submitted from.</strong> ssubmit writes <code class="i">tmuxjob.out</code> and <code class="i">tmuxjob.err</code> into your current directory — check <code class="i">tmuxjob.err</code> if the job dies immediately.</li>
+    <li><strong>The shell is fixed at submit time.</strong> <code class="i">TMUX_JOB_SHELL</code> is decided when you source the file, so if you submit from bash and later attach from zsh, the session is still bash until you resubmit.</li>
+    <li><strong><span class="kbd">Ctrl-b</span> <span class="kbd">d</span> detaches; <code class="i">exit</code> closes.</strong> If you <code class="i">exit</code> out of every window, the tmux session is gone and you'll need to resubmit.</li>
+    <li><strong>Nesting tmux is confusing.</strong> If you're already in tmux on the login node, press <span class="kbd">Ctrl-b</span> twice to send the prefix through to the inner session.</li>
+  </ul>
+</section>
+
+<!-- 12 -->
+<section class="slide">
+  <div class="eyebrow">Bonus, same trick</div>
+  <h2>Get a shell inside any running job</h2>
+  <p>The <code class="i">srun --overlap</code> trick isn't specific to tmux. You can drop a shell into <em>any</em> job of yours that's currently running:</p>
+  <pre>srun --jobid=12345678 --overlap --pty bash    # any job ID from squeue</pre>
+  <p>Now <code class="i">htop</code>, <code class="i">nvidia-smi</code>, <code class="i">tail</code> a log — while it's still going. Useful for "is this actually using the 200 GB I asked for?"</p>
+  <h3>Wrapped up as a function — <code class="i">joinjob</code>, or <code class="i">joinjob 12345678</code></h3>
+  <pre class="sm">joinjob() {
+    local target_job="$1"
+
+    # No arrays: zsh indexes them from 1 and bash from 0, so ${arr[0]}
+    # silently expands to an empty job ID under zsh.
+    if [ -z "$target_job" ]; then
+        target_job=$(squeue -u "$USER" -n "$TMUX_JOB_NAME" -h -t RUNNING -o "%i" | head -n 1)
+    fi
+
+    if [ -z "$target_job" ]; then
+        echo "[ERROR] No running job named '$TMUX_JOB_NAME' found for user $USER." &gt;&amp;2
+        return 1
+    fi
+
+    echo "[INFO] Attaching to job: $target_job"
+    srun --jobid="$target_job" --overlap --pty "$TMUX_JOB_SHELL" -l
+}</pre>
+  <p class="small">With no argument it joins your tmux job; give it a job ID and it joins anything. Runs <code class="i">$TMUX_JOB_SHELL</code>, so you get whichever shell you actually use.</p>
+</section>
+
+<!-- 13 -->
+<section class="slide">
+  <div class="eyebrow">Bonus — worth stealing</div>
+  <h2>Make Slurm readable</h2>
+  <p class="sub">No aliases needed. Slurm reads these environment variables directly — put them in your <code class="i">~/.profile</code> or <code class="i">~/.bashrc</code>.</p>
+  <pre class="sm">export SQUEUE_FORMAT="%.10i %.30j %.10T %.10P %.20R %.10q %.17S %.10l %.10L %.6m"
+export SQUEUE_USERS="$USER"
+export SACCT_FORMAT="JobID,JobName%30,ExitCode,State,ReqMem,MaxRSS,Timelimit,Elapsed,Start,End"
+export SLURM_TIME_FORMAT="%X %d/%m/%y"</pre>
+  <ul>
+    <li>Plain <code class="i">squeue</code> now shows <em>only your jobs</em>, with 30 characters of job name instead of 8, plus the estimated start time and time remaining</li>
+    <li>Plain <code class="i">sacct</code> now shows <strong>ReqMem next to MaxRSS</strong> — how much you asked for versus what you actually used. This is how you stop requesting 500 GB for a job that peaks at 12 GB</li>
+    <li>Dates come out as <code class="i">17/08/26</code> instead of ISO timestamps</li>
+  </ul>
+  <div class="note"><p>Bonus alias: <code class="i">alias sq='squeue'</code>. You type it fifty times a day.</p></div>
+</section>
+
+<!-- 14 -->
+<section class="slide">
+  <div class="eyebrow">Bonus — worth stealing</div>
+  <h2>SSH config: stop reauthenticating, stop dropping out</h2>
+  <p class="sub">On your <em>laptop</em>, in <code class="i">~/.ssh/config</code>:</p>
+  <pre class="sm">Host *
+    ServerAliveInterval 10
+    ServerAliveCountMax 5
+
+Host bunya bunya.ssh
+    User           uqXXXXXX
+    HostName       bunya.rcc.uq.edu.au
+    ControlMaster  auto
+    ControlPersist 10m
+    ControlPath    ~/.ssh/control-%r@%h:%p</pre>
+  <ul>
+    <li><strong>ControlMaster / ControlPersist</strong> — the first connection does the authentication; every terminal you open in the next 10 minutes reuses it and connects <em>instantly</em>, with no password and no MFA prompt</li>
+    <li><strong>ServerAliveInterval</strong> — a keepalive every 10s, so an idle connection isn't quietly dropped by the network</li>
+    <li>Now you just type <code class="i">ssh bunya</code></li>
+  </ul>
+  <div class="note warn"><p><strong>If you force a login shell</strong> with <code class="i">RemoteCommand zsh -l</code> and <code class="i">RequestTTY force</code> (handy — it makes <code class="i">ssh bunya</code> give you your real shell), keep a <em>second</em> alias without those lines. <code class="i">scp</code>, <code class="i">rsync</code> and VS Code Remote-SSH all break on a forced RemoteCommand. That's what the <code class="i">bunya.ssh</code> name above is for.</p></div>
+</section>
+
+<!-- 15 -->
+<section class="slide">
+  <div class="eyebrow">Bonus — worth stealing</div>
+  <h2>Three more Bunya-specific things</h2>
+  <h3>Make your files readable by the rest of us</h3>
+  <pre>umask 002    # everything you create is group-readable and group-writable</pre>
+  <p class="small" style="margin-top:-6px">Put it in your <code class="i">~/.profile</code>. Saves an enormous amount of "can you chmod that for me" over a year.</p>
+
+  <h3>Use the group's databases instead of downloading your own</h3>
+  <pre class="sm">export BAKTA_DB=/scratch/project_mnt/S0256/bakta/db/v6.0_20250224/db
+export CHECKM2DB=/scratch/opendata/genomics/CheckM2/version_3/CheckM2_database/uniref100.KO.1.dmnd
+export MOB_SUITE_DB=/scratch/project_mnt/S0256/mob-suite/db
+export ATB_DATA_DIR=/scratch/project_mnt/S0256/databases/atb-cli</pre>
+
+</section>
+
+<!-- 16 -->
+<section class="slide">
+  <div class="eyebrow">That's it</div>
+  <h2>Copy and paste</h2>
+  <p class="sub">Everything from this talk, in one block. Drop it in whichever shell config file you use and <code class="i">source</code> it. Tested in both bash and zsh.</p>
+  <pre class="sm tall">alias sq='squeue'
+export SQUEUE_FORMAT="%.10i %.30j %.10T %.10P %.20R %.10q %.17S %.10l %.10L %.6m"
+export SQUEUE_USERS="$USER"
+export SACCT_FORMAT="JobID,JobName%30,ExitCode,State,ReqMem,MaxRSS,Timelimit,Elapsed,Start,End"
+export SLURM_TIME_FORMAT="%X %d/%m/%y"
+umask 002
+
+TMUX_JOB_NAME="tmuxjob"
+TMUX_JOB_CPUS=8
+if [ -n "$ZSH_VERSION" ]; then TMUX_JOB_SHELL="zsh"; else TMUX_JOB_SHELL="bash"; fi
+
+start_tmux_job() {
+    echo "[INFO] Submitting interactive tmux job..."
+    SSUBMIT_MEMORY=32g SSUBMIT_TIME=1d \
+        ssubmit "$@" "$TMUX_JOB_NAME" \
+        "tmux new-session -d -s worker $TMUX_JOB_SHELL -l; while tmux has-session -t worker 2>/dev/null; do sleep 30; done" \
+        -- -c "$TMUX_JOB_CPUS"
+    echo "[INFO] Job submitted. Wait a moment, then type 'join_tmux_job'."
+}
+
+join_tmux_job() {
+    local target_job
+    target_job=$(squeue -u "$USER" -n "$TMUX_JOB_NAME" -h -t RUNNING -o "%i" | head -n 1)
+    if [ -z "$target_job" ]; then
+        echo "[ERROR] No running '$TMUX_JOB_NAME' job found." &gt;&amp;2
+        return 1
+    fi
+    echo "[INFO] Attaching to tmux on worker node (Job ID: $target_job)..."
+    srun --jobid="$target_job" --overlap --pty tmux attach-session -t worker
+}
+
+joinjob() {
+    local target_job="$1"
+    if [ -z "$target_job" ]; then
+        target_job=$(squeue -u "$USER" -n "$TMUX_JOB_NAME" -h -t RUNNING -o "%i" | head -n 1)
+    fi
+    if [ -z "$target_job" ]; then
+        echo "[ERROR] No running job named '$TMUX_JOB_NAME' found for user $USER." &gt;&amp;2
+        return 1
+    fi
+    echo "[INFO] Attaching to job: $target_job"
+    srun --jobid="$target_job" --overlap --pty "$TMUX_JOB_SHELL" -l
+}</pre>
+  <p style="margin-top:4px">Then: <code class="i">start_tmux_job -m 32g -t 3d</code> → <code class="i">join_tmux_job</code> → <span class="kbd">Ctrl-b</span> <span class="kbd">d</span>. &nbsp;<span class="small">Hit <strong>Reference</strong> (bottom right) for one scrollable page. Dotfiles: <a href="https://github.com/mbhall88/.dotfiles">github.com/mbhall88/.dotfiles</a> · <a href="https://github.com/mbhall88/ssubmit">ssubmit</a></span></p>
+</section>
+
+</div>
+
+<div id="chrome">
+  <button id="modeBtn" title="Toggle between slides and one scrollable reference page">Reference</button>
+  <span id="nav">
+    <button id="prev" title="Previous slide">‹</button>
+    <button id="next" title="Next slide">›</button>
+  </span>
+  <span id="count"></span>
+</div>
+<div id="hint">← → navigate &nbsp;·&nbsp; <b>f</b> fullscreen &nbsp;·&nbsp; <b>r</b> reference mode &nbsp;·&nbsp; <b>p</b> print / PDF</div>
+
+<script>
+(function(){
+  var slides = Array.prototype.slice.call(document.querySelectorAll('.slide'));
+  var stage  = document.getElementById('stage');
+  var bar    = document.getElementById('bar');
+  var count  = document.getElementById('count');
+  var cur    = 0;
+
+  /* ---------- shell highlighter ---------- */
+  var KW  = /^(export|function|local|if|then|else|elif|fi|for|while|do|done|return|case|esac|alias|unalias|set|unset|source|echo|command)$/;
+  var CMD = /^(ssubmit|srun|sbatch|squeue|sacct|scancel|salloc|sinfo|tmux|ssh|scp|rsync|module|conda|sleep|head|tail|awk|sed|grep|htop|git|nvim|vim|code|printf|umask|bind|unbind|rquota)$/;
+  function esc(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+  function hl(src){
+    var out='', i=0, m, w, t;
+    while(i < src.length){
+      var c = src[i];
+      if(c === '#' && (i === 0 || /\s/.test(src[i-1]))){
+        var j = src.indexOf('\n', i); if(j < 0) j = src.length;
+        out += '<span class="c">' + esc(src.slice(i,j)) + '</span>'; i = j; continue;
+      }
+      if(c === "'" || c === '"'){
+        var k = i+1;
+        while(k < src.length && src[k] !== c){ if(src[k] === '\\') k++; k++; }
+        k = Math.min(k+1, src.length);
+        out += '<span class="s">' + esc(src.slice(i,k)) + '</span>'; i = k; continue;
+      }
+      if(c === '$'){
+        m = /^\$\{?[A-Za-z_@#?*][A-Za-z0-9_]*\}?|^\$-|^\$\(/.exec(src.slice(i));
+        if(m){ out += '<span class="v">' + esc(m[0]) + '</span>'; i += m[0].length; continue; }
+      }
+      if(c === '-' && (i === 0 || /[\s(]/.test(src[i-1]))){
+        m = /^-{1,2}[A-Za-z][A-Za-z0-9_-]*|^--(?=\s|$)/.exec(src.slice(i));
+        if(m){ out += '<span class="f">' + esc(m[0]) + '</span>'; i += m[0].length; continue; }
+      }
+      w = /^[A-Za-z_][A-Za-z0-9_.-]*/.exec(src.slice(i));
+      if(w){
+        t = w[0];
+        if(KW.test(t))      out += '<span class="k">'   + esc(t) + '</span>';
+        else if(CMD.test(t))out += '<span class="cmd">' + esc(t) + '</span>';
+        else                out += esc(t);
+        i += t.length; continue;
+      }
+      out += esc(c); i++;
+    }
+    return out;
+  }
+
+  /* ---------- decorate code blocks ---------- */
+  Array.prototype.forEach.call(document.querySelectorAll('pre'), function(pre){
+    var raw = pre.textContent.replace(/^\n/, '').replace(/\s+$/, '');
+    pre.innerHTML = hl(raw);
+    var wrap = document.createElement('div');
+    wrap.className = 'codewrap';
+    pre.parentNode.insertBefore(wrap, pre);
+    wrap.appendChild(pre);
+    var btn = document.createElement('button');
+    btn.className = 'copy'; btn.type = 'button'; btn.textContent = 'Copy';
+    btn.addEventListener('click', function(){
+      var done = function(){
+        btn.textContent = 'Copied'; btn.classList.add('done');
+        setTimeout(function(){ btn.textContent = 'Copy'; btn.classList.remove('done'); }, 1400);
+      };
+      if(navigator.clipboard && navigator.clipboard.writeText){
+        navigator.clipboard.writeText(raw).then(done, function(){ fallback(); });
+      } else { fallback(); }
+      function fallback(){
+        var ta = document.createElement('textarea');
+        ta.value = raw; ta.style.position = 'fixed'; ta.style.opacity = '0';
+        document.body.appendChild(ta); ta.select();
+        try { document.execCommand('copy'); done(); } catch(e) { btn.textContent = 'Select & copy'; }
+        document.body.removeChild(ta);
+      }
+    });
+    wrap.appendChild(btn);
+  });
+
+  /* ---------- slide numbers ---------- */
+  slides.forEach(function(s, i){
+    if(i === 0) return;
+    var n = document.createElement('div');
+    n.className = 'slidenum';
+    n.textContent = String(i+1).padStart(2, '0') + ' / ' + slides.length;
+    s.appendChild(n);
+  });
+
+  /* ---------- shrink any slide whose content overflows ---------- */
+  function autofit(){
+    slides.forEach(function(s){
+      s.style.zoom = '';
+      if(document.body.classList.contains('ref')) return;
+      var wasOn = s.classList.contains('on');
+      if(!wasOn){ s.style.visibility = 'hidden'; s.classList.add('on'); }
+      var z = 1, guard = 0;
+      while(s.scrollHeight > s.clientHeight + 1 && z > 0.6 && guard++ < 40){
+        z -= 0.02; s.style.zoom = z.toFixed(2);
+      }
+      if(!wasOn){ s.classList.remove('on'); s.style.visibility = ''; }
+    });
+  }
+
+  /* ---------- scaling ---------- */
+  function fit(){
+    if(document.body.classList.contains('ref')) return;
+    var s = Math.min(window.innerWidth / 1280, window.innerHeight / 720);
+    stage.style.transform = 'scale(' + s + ')';
+    stage.style.left = ((window.innerWidth - 1280 * s) / 2) + 'px';
+    stage.style.top  = ((window.innerHeight - 720 * s) / 2) + 'px';
+  }
+
+  function show(n){
+    cur = Math.max(0, Math.min(slides.length - 1, n));
+    slides.forEach(function(s, i){ s.classList.toggle('on', i === cur); });
+    bar.style.width = ((cur + 1) / slides.length * 100) + '%';
+    count.textContent = (cur + 1) + ' / ' + slides.length;
+    if(!document.body.classList.contains('ref')) history.replaceState(null, '', '#' + (cur + 1));
+  }
+
+  function setMode(ref){
+    document.body.classList.toggle('ref', ref);
+    document.getElementById('modeBtn').textContent = ref ? 'Slides' : 'Reference';
+    if(ref){
+      stage.style.transform = 'none'; stage.style.left = '0'; stage.style.top = '0';
+      slides.forEach(function(s){ s.style.zoom = ''; });
+      history.replaceState(null, '', '#ref');
+    } else {
+      fit(); autofit(); show(cur); window.scrollTo(0, 0);
+    }
+  }
+
+  document.getElementById('modeBtn').addEventListener('click', function(){
+    setMode(!document.body.classList.contains('ref'));
+  });
+  document.getElementById('prev').addEventListener('click', function(){ show(cur - 1); });
+  document.getElementById('next').addEventListener('click', function(){ show(cur + 1); });
+
+  document.addEventListener('keydown', function(e){
+    if(e.metaKey || e.ctrlKey || e.altKey) return;
+    var tag = (e.target.tagName || '').toLowerCase();
+    if(tag === 'input' || tag === 'textarea') return;
+    var ref = document.body.classList.contains('ref');
+    if(e.key === 'r' || e.key === 'R'){ setMode(!ref); e.preventDefault(); return; }
+    if(e.key === 'p' || e.key === 'P'){ window.print(); e.preventDefault(); return; }
+    if(e.key === 'f' || e.key === 'F'){
+      if(document.fullscreenElement) document.exitFullscreen();
+      else if(document.documentElement.requestFullscreen) document.documentElement.requestFullscreen();
+      e.preventDefault(); return;
+    }
+    if(ref) return;
+    if(['ArrowRight','ArrowDown','PageDown',' ','Enter'].indexOf(e.key) > -1){ show(cur + 1); e.preventDefault(); }
+    if(['ArrowLeft','ArrowUp','PageUp','Backspace'].indexOf(e.key) > -1){ show(cur - 1); e.preventDefault(); }
+    if(e.key === 'Home'){ show(0); e.preventDefault(); }
+    if(e.key === 'End'){ show(slides.length - 1); e.preventDefault(); }
+  });
+
+  window.addEventListener('resize', fit);
+  window.addEventListener('hashchange', function(){
+    var hh = (location.hash || '').replace('#', '');
+    if(hh === 'ref'){ if(!document.body.classList.contains('ref')) setMode(true); return; }
+    var nn = parseInt(hh, 10);
+    if(!isNaN(nn)){
+      if(document.body.classList.contains('ref')) setMode(false);
+      if(nn - 1 !== cur) show(nn - 1);
+    }
+  });
+
+  var h = (location.hash || '').replace('#', '');
+  if(h === 'ref'){ setMode(true); }
+  else {
+    var n = parseInt(h, 10);
+    fit(); autofit(); show(isNaN(n) ? 0 : n - 1);
+  }
+  if(document.fonts && document.fonts.ready){
+    document.fonts.ready.then(function(){ if(!document.body.classList.contains('ref')) autofit(); });
+  }
+})();
+</script>
+</body>
+</html>
