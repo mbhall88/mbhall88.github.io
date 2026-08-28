@@ -1,8 +1,10 @@
 ---
-title: "Writing With AI, Reading in Good Faith"
+title: "Writing with AI, reading in good faith"
 description: "Why responsibility for AI-assisted writing does not end with the writer."
-date: 2026-08-27T15:48:15+10:00
-draft: true
+date: 2026-08-28T16:14:59+10:00
+draft: false
+images:
+  - social-preview.png
 tags:
   - artificial-intelligence
   - writing
