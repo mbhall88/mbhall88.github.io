@@ -80,6 +80,10 @@
     color: #b42318;
 }
 
+[data-theme="dark"] .copy-quote-button.is-error {
+    color: #ff8a80;
+}
+
 @media (hover: none) {
     .copy-quote-button {
         opacity: 1;

@@ -18,6 +18,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '20'
+      - run: node --test tests/*.test.mjs
       - run: |
           npm install -g hugo-bin
           hugo --minify

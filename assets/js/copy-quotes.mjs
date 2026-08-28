@@ -22,9 +22,9 @@ function copyButtonMarkup() {
     `;
 }
 
-function quoteText(blockquote) {
+export function quoteText(blockquote) {
     const copy = blockquote.cloneNode(true);
-    copy.querySelector(".copy-quote-button")?.remove();
+    copy.querySelectorAll(".copy-quote-button").forEach((button) => button.remove());
     return copy.innerText.trim();
 }
 

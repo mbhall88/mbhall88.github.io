@@ -53,3 +53,82 @@ test("quoteSelector ignores empty and unrelated URL fragments", () => {
     assert.equal(copyQuotes.quoteSelector("#footnotes"), null);
     assert.equal(copyQuotes.quoteSelector("#quote-3"), "#quote-3");
 });
+
+test("quoteText removes every nested copy control", () => {
+    let removals = 0;
+    const blockquote = {
+        cloneNode() {
+            return {
+                innerText: "A nested quotation",
+                querySelectorAll(selector) {
+                    assert.equal(selector, ".copy-quote-button");
+                    return [
+                        { remove: () => removals++ },
+                        { remove: () => removals++ },
+                    ];
+                },
+            };
+        },
+    };
+
+    assert.equal(copyQuotes.quoteText(blockquote), "A nested quotation");
+    assert.equal(removals, 2);
+});
+
+test("enhanceCopyableQuotes numbers quotes and scrolls only to a valid existing quote", () => {
+    const makeQuote = () => ({
+        id: "",
+        children: [],
+        querySelector: () => null,
+        appendChild(child) {
+            this.children.push(child);
+        },
+        matches: (selector) => selector === ".post-content blockquote",
+        scrollIntoView() {
+            this.scrolls = (this.scrolls || 0) + 1;
+        },
+    });
+    const quotes = [makeQuote(), makeQuote()];
+    const makeButton = () => ({
+        classList: { add() {}, remove() {} },
+        setAttribute() {},
+        addEventListener() {},
+    });
+    const doc = {
+        title: "Post title",
+        querySelectorAll: () => quotes,
+        createElement: makeButton,
+        querySelector(selector) {
+            if (selector === 'link[rel="canonical"]') {
+                return { href: "https://example.com/post/" };
+            }
+            if (selector === 'meta[property="og:title"]') {
+                return { content: "Post title" };
+            }
+            if (selector === 'meta[property="og:site_name"]') {
+                return { content: "Site title" };
+            }
+            return quotes.find((quote) => `#${quote.id}` === selector) || null;
+        },
+    };
+    const originalWindow = globalThis.window;
+
+    try {
+        globalThis.window = {
+            location: { href: "https://example.com/post/#quote-2", hash: "#quote-2" },
+            requestAnimationFrame: (callback) => callback(),
+            setTimeout() {},
+        };
+        copyQuotes.enhanceCopyableQuotes(doc);
+
+        assert.deepEqual(quotes.map((quote) => quote.id), ["quote-1", "quote-2"]);
+        assert.equal(quotes[0].scrolls || 0, 0);
+        assert.equal(quotes[1].scrolls, 1);
+
+        globalThis.window.location.hash = "#missing";
+        copyQuotes.enhanceCopyableQuotes(doc);
+        assert.equal(quotes[1].scrolls, 1);
+    } finally {
+        globalThis.window = originalWindow;
+    }
+});
