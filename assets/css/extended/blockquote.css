@@ -2,7 +2,7 @@
 .md-content blockquote {
     position: relative;
     margin: 2rem 0;
-    padding: 1.25rem 1.5rem 1.25rem 3.75rem;
+    padding: 1.25rem 4.75rem 1.25rem 3.75rem;
     border: 1px solid var(--tertiary);
     border-inline-start: 0.3rem solid var(--primary);
     border-radius: 10px;
@@ -33,14 +33,86 @@
     margin-top: 0.8rem;
 }
 
+.copy-quote-button {
+    position: absolute;
+    top: 0.75rem;
+    inset-inline-end: 0.75rem;
+    display: inline-flex;
+    gap: 0.35rem;
+    align-items: center;
+    padding: 0.4rem 0.55rem;
+    border: 1px solid var(--tertiary);
+    border-radius: 6px;
+    background: var(--theme);
+    color: var(--secondary);
+    cursor: pointer;
+    font: inherit;
+    font-size: 0.75rem;
+    line-height: 1;
+    opacity: 0;
+    transform: translateY(-0.2rem);
+    transition: color 0.15s ease, opacity 0.15s ease, transform 0.15s ease;
+}
+
+.md-content blockquote:hover .copy-quote-button,
+.md-content blockquote:focus-within .copy-quote-button,
+.copy-quote-button.is-copied,
+.copy-quote-button.is-error {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.copy-quote-button:hover,
+.copy-quote-button:focus-visible {
+    color: var(--primary);
+}
+
+.copy-quote-button:focus-visible {
+    outline: 2px solid var(--primary);
+    outline-offset: 2px;
+}
+
+.copy-quote-button.is-copied {
+    color: var(--primary);
+}
+
+.copy-quote-button.is-error {
+    color: #b42318;
+}
+
+@media (hover: none) {
+    .copy-quote-button {
+        opacity: 1;
+        transform: none;
+    }
+}
+
 @media screen and (max-width: 600px) {
     .md-content blockquote {
-        padding: 1rem 1rem 1rem 3rem;
+        padding: 1rem 3.25rem 1rem 3rem;
     }
 
     .md-content blockquote::before {
         top: 0.35rem;
         inset-inline-start: 0.85rem;
         font-size: 2.5rem;
+    }
+
+    .copy-quote-button {
+        top: 0.6rem;
+        inset-inline-end: 0.6rem;
+        padding: 0.45rem;
+    }
+
+    .copy-quote-button span {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        white-space: nowrap;
+        border: 0;
     }
 }

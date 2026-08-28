@@ -66,3 +66,14 @@ document.addEventListener("DOMContentLoaded", function() {
 });
 </script>
 {{- end -}}
+
+{{- if and .IsPage (eq .Type "post") -}}
+{{- $copyQuotesOptions := dict "targetPath" "assets/js/copy-quotes.js" "format" "esm" "minify" true -}}
+{{- $copyQuotes := resources.Get "js/copy-quotes.mjs" | js.Build $copyQuotesOptions -}}
+{{- if not site.Params.assets.disableFingerprinting -}}
+{{- $copyQuotes = $copyQuotes | fingerprint -}}
+<script type="module" src="{{ $copyQuotes.RelPermalink }}" integrity="{{ $copyQuotes.Data.Integrity }}"></script>
+{{- else -}}
+<script type="module" src="{{ $copyQuotes.RelPermalink }}"></script>
+{{- end -}}
+{{- end -}}
