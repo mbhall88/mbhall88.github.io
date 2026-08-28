@@ -1,0 +1,46 @@
+/* Pull-quote treatment for prose blockquotes. */
+.md-content blockquote {
+    position: relative;
+    margin: 2rem 0;
+    padding: 1.25rem 1.5rem 1.25rem 3.75rem;
+    border: 1px solid var(--tertiary);
+    border-inline-start: 0.3rem solid var(--primary);
+    border-radius: 10px;
+    background: var(--entry);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+}
+
+.md-content blockquote::before {
+    content: "“";
+    position: absolute;
+    top: 0.45rem;
+    inset-inline-start: 1.15rem;
+    color: var(--secondary);
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 3rem;
+    font-weight: 700;
+    line-height: 1;
+    opacity: 0.45;
+}
+
+.md-content blockquote p {
+    margin: 0;
+    font-size: 1.05em;
+    line-height: 1.65;
+}
+
+.md-content blockquote p + p {
+    margin-top: 0.8rem;
+}
+
+@media screen and (max-width: 600px) {
+    .md-content blockquote {
+        padding: 1rem 1rem 1rem 3rem;
+    }
+
+    .md-content blockquote::before {
+        top: 0.35rem;
+        inset-inline-start: 0.85rem;
+        font-size: 2.5rem;
+    }
+}
