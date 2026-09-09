@@ -1,0 +1,3 @@
+# Keep detector provenance logs, but not locally compiled Rust binaries.
+!normalisation-example/*.log
+normalisation-example/extract/target/

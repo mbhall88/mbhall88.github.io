@@ -1,0 +1,1 @@
+input=/scratch/user/uqmhal11/lrge-issue29/SRR10353548/SRR10353548.fastq.gz seed=4556 records=251253 Depth skew detected (99.9th percentile minimizer count is 281.00x the median; sampled reads: 2546)

@@ -1,0 +1,31 @@
+Generated with the built-in image generator. Style reference: graphical-abstract.png.
+
+Initial generation prompt
+
+Use case: scientific-educational infographic-diagram.
+Redesign the attached LRGE graphical abstract. The user wants it MORE TECHNICAL about how the method works and to clearly identify what CHANGED in version 1.0.0. Use the attached image only as a palette/style reference; substantially replace its content and layout. The first image was too generic.
+Create a polished, scientifically careful, readily readable graphical abstract for a computational biology blog and LinkedIn, landscape around 1.9:1, at high resolution. OPAQUE SOLID WHITE background, no transparency, sharp charcoal text, restrained teal and amber, flat vector-style scientific illustration. No enormous title: devote most space to the mechanism. Generous margins and large readable labels. Four connected stages across one row, with drawings carrying the detail. Thin arrows between stages. Mark v1 changes using small amber badges and show the unchanged core method in charcoal/teal. Avoid boxed corporate cards.
+Title: "LRGE 1.0.0"
+Subtitle: "Genome size from read overlaps"
+Small key near title: amber badge "NEW / FIXED IN v1".
+
+Stage 1 header "1  Detect depth skew"
+Draw several long DNA read strips, with short recurring seed marks on them representing minimizers. Under these a compact row of five marker-count bars, four moderate teal bars and one very high amber bar, clearly a count summary and not a genome alignment. Label "Minimizer counts". A small amber callout here reads "v1: normalise when skewed".
+Stage 2 header "2  Select two read sets"
+Draw a small pool of mixed long teal and amber reads split by two arrows into distinct vertically stacked groups with labels "10,000 targets" and "5,000 queries". These are the default sample counts, not literal numbers of drawn bars. The disproportionately frequent amber sequence has fewer representatives in the selected groups, but it is not removed completely. Small explanatory line "Downweight high-depth reads". Add a subtle connection from stage 1 count bars to the selection, showing counts inform selection.
+Stage 3 header "3  Count overlaps"
+Draw a query read labelled "Query" aligned with three staggered target read strips labelled collectively "Targets", shaded common stretches indicating matching sequence. These are read-to-read comparisons, not read-to-reference mapping or assembly. Label below "minimap2". Amber change callout with two lines: "v1: platform flag fixed" and "ONT → ava-ont   |   PacBio → ava-pb". Smaller optional annotation below "Repeat filter (-F): opt-in". Do NOT imply repeat filtering is default.
+Stage 4 header "4  Estimate genome size"
+Show a little cluster of dots along a horizontal size axis, representing per-read size estimates, then an arrow down to a clearly marked point with a horizontal interval. Label dots "Per-read estimates". Near the connection from stage 3, short text "Read lengths + overlap counts". Label final point-and-interval "Median + interval". Amber change callout "v1: intervals fitted per platform". Do not draw a box around the point like a boxplot: one point and interval end caps only.
+Along the bottom, one quiet, concise performance strip visually separate from the four-stage algorithm. Label "v1 performance" then three short illustrated items with tiny clear schematic icons: "2-bit DNA" with ACGT → binary blocks; "Parallel scoring" with three thin parallel arrows rejoining in order; "Capped read buffer" with small memory blocks plus a return arrow. These optimisations apply to depth normalisation/read selection, not to genome assembly.
+Far bottom right small text "No assembly required".
+Scientific constraints: core estimator uses per-query overlap counts and read lengths, median of per-read genome size estimates; the two-set method already existed before v1, do not mark that as new. New depth normalisation is conditional on detected skew and alters sampling probabilities; keep some amber reads. The fix to platform CLI selects correct minimap2 overlap presets ava-ont and ava-pb. The new reported intervals are calibrated separately for the platforms. Do not claim a generic accuracy percentage or overall runtime speedup. No exact genome-size formula, invented benchmark data, DNA double helices, plasmid deletion, reconstructed genome, lab equipment, gears or decorative gradient. Distinguish stage diagrams from measured data; no numbered plot axes needed. Keep all text spelled exactly. Prioritise meaningful drawings over prose; total visual should be readable, technical but not dense.
+
+Correction pass
+
+Make a precise correction to this LRGE scientific graphical abstract. Preserve the overall four-stage layout, title, all accurate method drawings, opaque white background, teal and amber palette, and amber v1 change badges. Change only these details:
+1. In the bottom "Parallel scoring" subsection, the small central box incorrectly says "Score overlaps". Replace the box text exactly with "Score reads". Replace the explanatory line "Split across threads, keep order" with "Retention scores in parallel". Draw three parallel incoming arrows into a small merge, followed by ONE outgoing arrow, to show scores returned in input order. Add the concise small label "Select in input order". This parallel optimisation scores READS for retention during normalisation; it is not overlap scoring.
+2. In the bottom "Capped read buffer" subsection, replace "Keep up to N reads" with "Byte cap; reread if needed". The cap is a memory byte limit, not a fixed number of reads. Keep its read bars and return arrow.
+3. Under stage 2, make labels "10,000 targets (default)" and "5,000 queries (default)" with the parenthetical on its own smaller line if needed.
+4. Add a clear thin right-pointing connection arrow from stage 2's selected read sets toward stage 3, in the existing whitespace, without crossing labels.
+Do not introduce extra labels, claims, equations, or changes. Leave all other text and the stage 4 per-read estimates and median interval intact. Keep text crisp and readable.

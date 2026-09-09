@@ -1,0 +1,29 @@
+Created with the built-in image generator.
+
+Initial prompt
+
+Create a clear scientific explanatory diagram for a technical bioinformatics blog about LRGE depth normalisation. This is a focused method figure, not a poster or generic marketing image.
+Landscape around 1.8:1, high-resolution, fully opaque white background, charcoal sans-serif text, teal for ordinary reads and amber for excess high-depth reads. Flat vector-like scientific graphics, clean lines, generous whitespace, readable labels. Restrained header "Depth-aware read selection". No version logo, decorative lab icons, DNA helix, or dense paragraphs.
+Three connected columns, all text large:
+LEFT heading "1  Detect skew". A stack of sequencing read strips, a small subset darkened to indicate sampling, then an arrow to a simple abstract minimizer-count histogram with a long high-count tail. Short labels "Sample ~1% of reads" and "99.9th percentile / median ≥ 16". Below this is a two-way gate: "Skew?" with a "Yes" arrow toward the middle column; a thin "No" bypass arrow across the bottom to the rightmost final target/query sets, labelled "Ordinary sampling".
+MIDDLE heading "2  Estimate read depth". Show all input read strips feeding a compact grid labelled "Full-input count-min sketch". Under it show a single read bearing minimizer seed marks with arrows from the grid to marks, label "Read depth d = median minimizer count". A separate short label "Baseline m from detector-sampled minimizers" explains that the baseline is from full-input counts of the minimizers selected during detection, NOT the median of all distinct input minimizers. Include no table of hash internals.
+RIGHT heading "3  Retain, then sample". Clearly typeset the formula "p = min(1, 2m / d)". Under it a small simple aligned worked example labelled "Example: m = 20" and exactly three rows:
+"d = 20    p = 1"
+"d = 80    p = 0.5"
+"d = 200   p = 0.2"
+Next to these rows tiny bar motifs fading some amber reads show increasing read depth means reduced probability of retention, never trimming reads. Below those rows an arrow to a pool labelled "Retained reads", then two branching arrows to tiny separate read groups labelled "Targets" and "Queries".
+Small bottom note "Example values illustrate the rule; retention is not final selection."
+Important scientific constraints: Read depth and baseline here are approximate minimizer COUNTS, not mapping coverage; do not add × coverage symbols to the example counts. LRGE first detects skew on sampled reads. If skewed, it profiles the full input. The baseline m is obtained using full-input counts for the minimizer identities sampled by the detector. A read's d is the median of that read's sampled minimizer counts. p is probability of surviving normalisation, NOT probability of entering the final query or target sets. Whole reads are retained probabilistically then a final reservoir sample supplies the two disjoint sets. The no-skew branch must go directly to sampling, skipping depth profiling and retention thinning. The small-read sampling exception need not be in the drawing; the caption will explain that 1% is approximate. No other numbers or equations; do not claim perfect equalisation or deletion of plasmids. All arrows and labels must match this logic. Keep typography crisp and diagram legible without a wall of text.
+
+Correction prompt
+
+Correct this scientific diagram while preserving its three columns, formula, worked example, overall layout, colours and opaque white background.
+1. The small histogram in panel 1 must have x-axis "Minimizer count" and y-axis "Number of minimizers". It is a frequency distribution of minimizer counts. Add a small downward arrow from the histogram/threshold toward the "Skew?" decision so that decision has an incoming connection.
+2. REMOVE the unconditional teal arrow linking panel 1 directly to panel 2 at mid-height. Only the existing "Yes" arrow from the "Skew?" diamond should enter panel 2. Preserve the arrow from panel 2 into panel 3. Preserve the No -> Ordinary sampling bypass along the bottom and have its terminal arrow point into the final Targets/Queries sampling area, not the retention formula.
+3. Shorten the large explanatory box at bottom of panel 2 to ONLY two lines of text:
+"Baseline m"
+"Median full-input count of detector-sampled minimizers"
+Use sufficiently large readable text, wrapping the second sentence onto two lines if needed. Remove the long paragraph and the parenthesis about all distinct minimizers.
+4. Show one amber read in each of the final Targets and Queries groups, with the other reads teal. Normalisation downweights high-depth reads; it does not necessarily remove every one.
+5. Place a tiny label "Schematic" near the sampled input read illustration: the illustrated dark read fraction is not literally 1%.
+Do not alter the retention formula p = min(1, 2m / d) or the m=20 worked examples d=20,p=1; d=80,p=0.5; d=200,p=0.2. Do not introduce any new claims or extra data.
