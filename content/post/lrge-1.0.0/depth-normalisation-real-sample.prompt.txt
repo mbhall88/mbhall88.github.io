@@ -1,0 +1,14 @@
+Use case: precise-object-edit
+Asset type: technical bioinformatics blog diagram, landscape.
+Image 1 is the edit target: preserve its title, three-panel layout, teal/amber/navy palette, panels 2 and 3 and all their text/equations/arrows. Image 2 is a supporting scientific plot, the measured count distribution for SRR26465526.
+Change ONLY the interior of panel 1 "Detect skew". Rearrange that interior for readability:
+At top, a compact horizontal read-sampling pictogram with text "Sample ~1% of reads". Remove the old tall stack and its large legend to free space.
+Below, use most of panel width for a histogram MODELLED ON image 2. Match its scientific shape: a very tall leftmost peak at count 1, a declining shoulder to count ~20, a deep sparse valley around counts 60–170, then a clearly visible smaller high-count bump with two local peaks near 270 and 430, falling off beyond 550. Do NOT draw a monotonically declining tail. The high-count bump is MUCH smaller than the main left peak, and is visible because BOTH axes use logarithmic scales.
+Histogram x ticks equally spaced at 1, 10, 100, 1000. X label "Minimizer count (log)".
+Histogram y ticks at 1, 100, 10,000 positioned on a logarithmic scale. Y label "Distinct minimizers / bin (log)".
+Use teal for the left population and amber for the high-count tail and bump. Do not smooth into an invented clean equal-height bimodal distribution; model the jagged measured bars.
+A small arrow/label "High-count minimizers" points to the right-hand bump.
+Above or just below histogram: "Modelled on SRR26465526".
+Retain the generic detector rule below histogram, exact text "99.9th percentile / median ≥ 16". Add smaller line "Example: 426 / 1 = 426" if it fits cleanly. Any dashed quantile marker must be at x=426 near the right bump, never near the low-count population.
+Keep bottom decision diamond "Skew?", Yes arrow into panel 2, and No route along the bottom labelled "Ordinary sampling" into final target/query selection.
+Do not add claims about what biological sequence the high-count minimizers originate from. Do not alter panel 2 baseline m or panel 3 illustrative example m=20; these are not the detector median. Keep all existing panel 2 and panel 3 details correct. Generous spacing, no overlaps, clean flat white background.

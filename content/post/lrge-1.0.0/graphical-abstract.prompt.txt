@@ -1,0 +1,19 @@
+Generated with the built-in image generator.
+
+Initial prompt
+
+Use case: infographic-diagram.
+Asset type: graphical abstract for a technical biology blog post and a reusable LinkedIn thumbnail, wide landscape approximately 1.91:1.
+Primary request: A beautiful simple conceptual abstract for LRGE 1.0.0, software that estimates genome size from long sequencing reads without assembling a genome. Explain the workflow with very few words and immediately legible scientific illustrations.
+Design: restrained editorial scientific illustration, flat vector-like shapes, crisp typography, white or very light warm background, dark charcoal text, teal reads and a warm amber accent for overrepresented reads. Plenty of whitespace, no enclosing UI cards, no gradients or shadows, not corporate clip art. Large enough text to survive a thumbnail. All content inside a generous safe margin.
+Hierarchy: large heading top left 'LRGE 1.0.0'; subheading 'Genome size from long reads'.
+Main visual is a left-to-right 3-stage flow spanning the canvas, connected by clean arrows:
+1. label 'Balance read depth'. Show an input group of long horizontal teal read strips and an excessive cluster of short amber read strips, transitioning within this stage to a small balanced selection retaining a few amber reads and teal reads. Excess amber reads softly fade, not all amber reads removed. This represents reducing overrepresented sequence during read selection, NOT deleting plasmids.
+2. label 'Count overlaps'. Show a few staggered long strips overlapping in aligned stretches, with subtle connectors highlighting the shared regions. Below this stage a small readable pill-like annotation 'Platform-aware' to indicate the correct nanopore or PacBio overlap settings; neither needs a separate branch.
+3. label 'Estimate genome size'. Show one clean horizontal measurement interval with end caps and a central dot. No numerical tick values, no DNA circle, no reconstructed or assembled chromosome.
+Bottom has two short unobtrusive separated text notes 'Packed DNA + parallel scoring' and 'No assembly needed'. Exact permitted text only: 'LRGE 1.0.0', 'Genome size from long reads', 'Balance read depth', 'Count overlaps', 'Platform-aware', 'Estimate genome size', 'Packed DNA + parallel scoring', 'No assembly needed'.
+Scientific constraints: the output is a numerical estimate represented by a dot and interval, not an assembly. The amber color marks oversampled sequence, NOT PacBio reads. Show overlap counting as the bridge from read selection to an estimate. No benchmark claims or invented numbers, no charts with invented data. Avoid DNA double helices, funnels, gears, computers, lab equipment, equations, microscopic labels, watermarks.
+
+Final edit prompt
+
+Edit this graphical abstract only to finish its background and readability. Keep all existing wording, the LRGE 1.0.0 title, its arrangement, the teal and amber read strips, arrows, and the point-and-interval output. Composite every element cleanly onto one completely OPAQUE SOLID WHITE background, RGBA alpha 255 everywhere. No transparent background or transparent holes. Ensure dark charcoal text has excellent contrast on white. Keep the original wide 1.91:1 composition. Clean any speckled edge artifacts around translucent amber reads and the highlighted overlap area. The finished image must look like a crisp scientific blog thumbnail on a white page and must remain legible when shared on LinkedIn.

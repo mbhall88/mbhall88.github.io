@@ -1,0 +1,24 @@
+[package]
+name = "lrge-detector-histogram"
+version = "0.1.0"
+edition = "2021"
+
+[[bin]]
+name = "lrge-detector-histogram"
+path = "main.rs"
+
+[dependencies]
+log = "0.4.25"
+needletail = { version = "0.6.0", default-features = false }
+rand = "0.9"
+simd-minimizers = { version = "3.0.0", features = ["scalar"] }
+crossbeam-channel = "0.5.15"
+flate2 = "1.0.34"
+
+[features]
+default = ["gzip"]
+gzip = []
+alignment = []
+bzip2 = []
+xz = []
+zstd = []
