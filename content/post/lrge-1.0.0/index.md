@@ -2,7 +2,7 @@
 title: "LRGE 1.0.0: better genome size estimates from long reads"
 description: Giving overrepresented reads less say and a small oversight with surprisingly large consequences.
 date: 2026-09-08T19:00:00+10:00
-draft: true
+draft: false
 has_table: true
 images:
   - graphical-abstract-technical.png
