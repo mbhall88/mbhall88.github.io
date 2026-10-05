@@ -110,7 +110,7 @@ All numbers are medians over the 14 samples unless stated otherwise.
 
 ### SNPs: Dorado is better at low depth
 
-{{< figure src="best-f1-depth.png" alt="Best F1 against depth for SNPs and indels, hac and sup reads, for each setup." caption="**Figure 1:** Median F1 against depth. Solid lines are Best F1, dashed lines are the default (PASS-only) score. The green line is Clair3 with the allele frequency filter, described below." >}}
+{{< figure src="best-f1-depth.png" alt="Best F1 against depth for SNPs and indels, hac and sup reads, for each setup." caption="**Figure 1:** Median F1 against depth, on a logit scale to spread out the differences close to 1. Solid lines are Best F1, dashed lines are the default (PASS-only) score. The green line is Clair3 with the allele frequency filter, described below." >}}
 
 At 5x and 10x, Dorado calls SNPs better than Clair3 (Figure 1, top row):
 
@@ -196,7 +196,7 @@ costs much less (hac 5x: 0.986 vs 0.991).
 
 ### Per sample
 
-{{< figure src="per-sample-best-f1.png" alt="Best F1 per sample at each depth for each setup, with dnd samples shaded." caption="**Figure 3:** Best F1 for every sample, at every depth. The two shaded samples carry *dnd* phosphorothioate systems." >}}
+{{< figure src="per-sample-best-f1.png" alt="Best F1 per sample at each depth for each setup, with dnd samples shaded." caption="**Figure 3:** Best F1 for every sample, at every depth, on a logit scale. Perfect scores (F1 = 1) are drawn in their own column after the dotted line. The two shaded samples carry *dnd* phosphorothioate systems." >}}
 
 The pattern holds across samples (Figure 3). At hac 10x, Dorado beats the paper's Clair3
 settings on SNPs for 13 of the 14 samples, and Clair3 beats Dorado on indels for all 14 at hac
