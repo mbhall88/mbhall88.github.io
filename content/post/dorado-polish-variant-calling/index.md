@@ -70,6 +70,7 @@ So the question for this post is:
 ## Methods
 
 The [workflow][workflow] lives in the paper's [NanoVarBench](https://github.com/mbhall88/NanoVarBench/) repository.
+The variant calls and vcfdist outputs are on [Zenodo][zenodo].
 
 ### Data
 All 14 samples (species) from the paper. I used the hac and sup simplex reads, basecalled with
@@ -293,7 +294,8 @@ Thanks to Ryan Wick, who got the ball rolling on this.
 ## Appendix
 
 The [workflow][workflow], the aggregated tables and the figures are in the NanoVarBench
-repository.
+repository. The filtered VCFs for every arm and read set, and vcfdist's outputs for each, are
+on Zenodo: [doi:10.5281/zenodo.23180742][zenodo].
 
 {{< csv-table src="table-s1-per-sample.csv" caption="Table S1: Per-sample results for every arm, depth and read model, with actual depths" >}}
 
@@ -340,6 +342,7 @@ repository.
 [ryan-v2]: https://rrwick.github.io/2026/06/19/dorado-v2-polishing.html
 [workflow]: https://github.com/mbhall88/NanoVarBench/tree/main/updates/2026-dorado-polish
 [truth]: https://zenodo.org/records/10867171
+[zenodo]: https://doi.org/10.5281/zenodo.23180742
 [rasusa]: https://github.com/mbhall88/rasusa
 [af-script]: https://github.com/mbhall88/NanoVarBench/blob/main/updates/2026-dorado-polish/workflow/scripts/af_filter.py
 [af-sweep]: https://github.com/mbhall88/NanoVarBench/blob/main/updates/2026-dorado-polish/final/tables/clair3_af_filter_summary.tsv
