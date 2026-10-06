@@ -27,26 +27,28 @@
         document.addEventListener("DOMContentLoaded", function() {
             try {
                 const rawData = {{ $data | jsonify | safeJS }};
-                let columns = [];
+                let header = [];
                 let rows = [];
 
                 if (Array.isArray(rawData) && rawData.length > 0) {
                     if (Array.isArray(rawData[0])) {
-                        // Array of arrays - map strings to objects to enforce fixedHeader widths
-                        columns = rawData[0].map(header => ({
-                            name: header,
-                            width: '130px'
-                        })); 
+                        header = rawData[0];
                         rows = rawData.slice(1);
                     } else {
-                        // Array of objects
-                        columns = Object.keys(rawData[0]).map(header => ({
-                            name: header,
-                            width: '130px'
-                        }));
+                        header = Object.keys(rawData[0]);
                         rows = rawData.map(row => Object.values(row));
                     }
                 }
+
+                // Size each column to its longest cell, so nothing spills into the next
+                // column. Headers wrap between words, so only their longest word counts.
+                const charPx = 8.5, padPx = 48, minPx = 80, maxPx = 420;
+                const columns = header.map((name, i) => {
+                    const longestWord = Math.max(...String(name).split(/\s+/).map(w => w.length));
+                    const longestCell = Math.max(0, ...rows.map(r => String(r[i] ?? '').length));
+                    const px = Math.min(maxPx, Math.max(minPx, Math.max(longestWord, longestCell) * charPx + padPx));
+                    return { name: name, width: Math.round(px) + 'px' };
+                });
 
                 const grid = new gridjs.Grid({
                     columns: columns,
