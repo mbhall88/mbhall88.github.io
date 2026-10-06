@@ -173,10 +173,12 @@ Clair3 misses more than Dorado on 13 of the 14[^gap]. By 50x the gap is gone: Cl
 The missing SNPs are mostly het calls that `--haploid_precise` throws away. In bacteria, a het
 call often points to a mixed sample, or to variants that arose while the isolate was cultured.
 Repeats can also cause them, in any genome. Reads from another copy of the repeat pile up at
-the same position, so the variant looks as if it is on only some of the reads. On one
-*E. coli* sample at hac 50x, 46 of Clair3's 50 missed SNPs were dropped this way. At low depth
+the same position, so the variant looks as if it is on only some of the reads (Figure 2). On
+one *E. coli* sample at hac 50x, 46 of Clair3's 50 missed SNPs were dropped this way. At low depth
 many more true SNPs are called het: at hac 10x, the het calls the AF filter rescues have a
 median AF of 0.8 to 0.9 in each sample.
+
+{{< figure src="het-call-repeat.png" alt="Diagram: reads from a second repeat copy align to the first, making a true SNP look heterozygous, which --haploid_precise drops and the AF filter keeps." caption="**Figure 2:** How a repeat turns a true SNP into a het call. **a**, The sequenced genome has two similar copies of a repeat, like the two 7.5 kb copies, 96.5% identical, in our *E. coli* sample. The SNP (T) is in copy 1 only. **b**, Some reads from copy 2 align to copy 1 with full mapping quality (MAPQ 60), carrying the reference base (C), so only some of the reads at the SNP carry the ALT. The read counts are illustrative: at the SNPs Clair3 missed in this sample, 60–85% of reads carried the ALT. **c**, Clair3's diploid model calls the site heterozygous. `--haploid_precise` drops the call, and `--haploid_sensitive` and the AF filter both call the ALT. A mixed sample, with reads from another strain in place of the reads from copy 2, gives the same kind of pileup." >}}
 
 `--haploid_sensitive` keeps those calls, but it also keeps minority alleles at around 20% AF,
 and QUAL can't tell those apart from the real variants. AF can. With the filter, Clair3's
@@ -205,17 +207,17 @@ Dorado's filter lets too much through. At hac 5x its `PASS` calls include 9,540 
 positive indels across the samples, against 503 at the best threshold. Dorado marks fewer than
 4% of its records `LowQual`.
 
-{{< figure src="pr-curves.png" alt="Precision-recall curves over QUAL for each arm at 10x and 50x." caption="**Figure 2:** Precision-recall curves over QUAL thresholds at 10x and 50x, for SNPs (top) and indels (bottom). Each curve pools all 14 samples, summing their true and false calls at each threshold. Markers show each arm's Default-PASS score, pooled the same way. Each panel is zoomed to its own range. Arm C + AF filter (0.65) is as in Figure 1." >}}
+{{< figure src="pr-curves.png" alt="Precision-recall curves over QUAL for each arm at 10x and 50x." caption="**Figure 3:** Precision-recall curves over QUAL thresholds at 10x and 50x, for SNPs (top) and indels (bottom). Each curve pools all 14 samples, summing their true and false calls at each threshold. Markers show each arm's Default-PASS score, pooled the same way. Each panel is zoomed to its own range. Arm C + AF filter (0.65) is as in Figure 1." >}}
 
 So for Ryan's suggestion, Dorado's QUAL *does* separate bad calls from good ones, at least at
-low depth (Figure 2). The best threshold depends on depth, though: QUAL ≥ 10 fixes most of the
+low depth (Figure 3). The best threshold depends on depth, though: QUAL ≥ 10 fixes most of the
 low-depth problem but costs a little at 50x[^qual].
 
 ### Per sample
 
-{{< figure src="per-sample-best-f1.png" alt="Best F1 per sample at each depth for each arm, with dnd samples shaded." caption="**Figure 3:** Best F1 for every sample at every depth, for SNPs and indels with hac and sup reads. F1 is on a logit scale and each panel has its own axis. A perfect score (F1 = 1) has no place on a logit scale, so perfect scores are drawn in their own column after the dotted line. The two shaded samples, *S. enterica* and *V. parahaemolyticus*, carry *dnd* phosphorothioate systems ([dorado#1599](https://github.com/nanoporetech/dorado/issues/1599)). Arm C + AF filter (0.65) is as in Figure 1." >}}
+{{< figure src="per-sample-best-f1.png" alt="Best F1 per sample at each depth for each arm, with dnd samples shaded." caption="**Figure 4:** Best F1 for every sample at every depth, for SNPs and indels with hac and sup reads. F1 is on a logit scale and each panel has its own axis. A perfect score (F1 = 1) has no place on a logit scale, so perfect scores are drawn in their own column after the dotted line. The two shaded samples, *S. enterica* and *V. parahaemolyticus*, carry *dnd* phosphorothioate systems ([dorado#1599](https://github.com/nanoporetech/dorado/issues/1599)). Arm C + AF filter (0.65) is as in Figure 1." >}}
 
-The pattern holds across samples (Figure 3). At sup 50x, Clair3 with the AF filter beats
+The pattern holds across samples (Figure 4). At sup 50x, Clair3 with the AF filter beats
 Dorado on SNPs for 9 of the 14 samples and ties on 4. Clair3 beats Dorado on indels for 10 of
 the 14 at 50x with either read model. Dorado's weakest indel results are *K. pneumoniae* and
 *M. tuberculosis*.
@@ -245,9 +247,9 @@ Median per 50x read set, over 28 read sets (14 samples, hac and sup), on 8 threa
 | Variant calling | `dorado polish` | GPU | 4.6 s | 1.4 GB |
 | Variant calling | `dorado polish` | CPU | 59 s | 9.7 GB |
 
-{{< figure src="runtime-memory.png" alt="Wall time and peak RAM of variant calling against depth for each arm, on log scales." caption="**Figure 4:** Wall time (left) and peak RAM (right) of variant calling against depth, both on log scales. Points are medians over the 28 read sets (14 samples, hac and sup) and bars show the range. Clair3 (Arms A-C) ran on 8 threads of an AMD EPYC 9745, and `dorado polish` (Arm D) on one NVIDIA H100 with 8 threads. The open marker is Dorado run on 8 CPU threads at 50x, for timing only. Alignment isn't shown. Peak RAM is host memory: Dorado's GPU memory isn't measured." >}}
+{{< figure src="runtime-memory.png" alt="Wall time and peak RAM of variant calling against depth for each arm, on log scales." caption="**Figure 5:** Wall time (left) and peak RAM (right) of variant calling against depth, both on log scales. Points are medians over the 28 read sets (14 samples, hac and sup) and bars show the range. Clair3 (Arms A-C) ran on 8 threads of an AMD EPYC 9745, and `dorado polish` (Arm D) on one NVIDIA H100 with 8 threads. The open marker is Dorado run on 8 CPU threads at 50x, for timing only. Alignment isn't shown. Peak RAM is host memory: Dorado's GPU memory isn't measured." >}}
 
-On a GPU, Dorado is at least ten times faster than Clair3 at every depth (Figure 4). On CPU it
+On a GPU, Dorado is at least ten times faster than Clair3 at every depth (Figure 5). On CPU it
 takes about as long, but needs much more memory. Clair3 took *longer* at 5x and
 10x (two to three minutes) than at 50x, and used more memory too. I haven't looked into why.
 The full breakdown, including alignment, is in [Table 1](table1-runtime-memory.csv).
