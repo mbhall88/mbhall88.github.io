@@ -37,9 +37,9 @@ with a couple of updated tools. I then compared the paper's best caller, Clair3
 - **Speed:** Dorado takes about 5 seconds for a 50x bacterial genome on an H100 GPU. On CPU it
   takes about a minute, as Clair3 does, but needs about 10 GB of RAM.
 
-In practice, at 50x either tool will give you nearly the same SNPs, with fewer than ten errors
-per genome. If you want the best you can get, down to single SNPs, use Clair3 with the AF
-filter.
+> In practice, at 50x either tool will give you nearly the same SNPs, with fewer than ten errors
+> per genome. If you want the best you can get, down to single SNPs, use Clair3 with the AF
+> filter.
 
 ## Background
 
@@ -273,14 +273,16 @@ The full breakdown, including alignment, is in [Table 1](table1-runtime-memory.c
 
 If you are calling variants in bacterial genomes from ONT reads:
 
-- Clair3 is still the best overall, especially for indels. If you use `--haploid_precise`,
-  consider running Clair3 diploid with an AF filter instead. It recovers the SNPs that
-  `--haploid_precise` throws away, and costs nothing on indels. It gave the best SNP results in
-  this benchmark at every depth.
+- Clair3 is still the best overall, especially for indels.
 - `dorado polish --vcf` is a reasonable choice for SNPs, particularly if you have a GPU
-  and want speed. At 50x it makes a few more SNP errors per genome than Clair3. Don't trust its
-  `PASS` filter at low depth: filter on QUAL (around 10 at 5–10x). Its indels lag behind
-  Clair3's.
+  and want speed. At 50x it makes a few more SNP errors per genome than Clair3. Its indels lag
+  behind Clair3's.
+
+> If you use `--haploid_precise`, consider running Clair3 diploid with an AF filter instead. It
+> recovers the SNPs that `--haploid_precise` throws away, and costs nothing on indels. It gave
+> the best SNP results in this benchmark at every depth.
+
+> Don't trust Dorado's `PASS` filter at low depth: filter on QUAL (around 10 at 5–10x).
 
 ## Acknowledgements
 
