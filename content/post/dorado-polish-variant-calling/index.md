@@ -4,6 +4,8 @@ description: Benchmarking `dorado polish` against Clair3, plus an allele frequen
 date: 2026-10-05T08:09:00+10:00
 draft: true
 has_table: true
+images:
+  - social-preview.png
 tags:
   - variant-calling
   - dorado
