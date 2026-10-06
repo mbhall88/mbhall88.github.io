@@ -157,7 +157,8 @@
     color: var(--primary) !important;            
     font-weight: 600 !important;
     text-align: left !important;
-    white-space: nowrap !important;
+    white-space: normal !important;
+    vertical-align: bottom !important;
 }
 
 /* Ensure text inside header button/content is visible */
@@ -179,7 +180,8 @@
     background-color: var(--entry) !important;
     color: var(--primary) !important;
     line-height: 1.5 !important;
-    white-space: nowrap !important;
+    white-space: normal !important;
+    overflow-wrap: break-word !important;
 }
 
 .gridjs-tr:last-child .gridjs-td {
