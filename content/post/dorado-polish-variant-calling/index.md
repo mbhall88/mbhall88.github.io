@@ -1,6 +1,6 @@
 ---
-title: "Comparing Dorado polish to state-of-the-art Clair3 for bacterial variant calling"
-description: Benchmarking `dorado polish` against Clair3, plus an allele frequency filter that improves on Clair3, the existing state of the art.
+title: "Comparing Dorado polish to Clair3 for bacterial variant calling"
+description: Benchmarking `dorado polish` against Clair3, plus an allele frequency filter that improves on Clair3, the existing gold standard.
 date: 2026-10-05T08:09:00+10:00
 draft: true
 has_table: true
@@ -23,15 +23,13 @@ math: true
 
 I reran our bacterial nanopore variant calling benchmark {{< cite "10.7554/eLife.98300" >}}
 with a couple of updated tools. I then compared the paper's best caller, Clair3
-{{< cite "10.1038/s43588-022-00387-x" >}}, head-to-head with ONT's
+{{< cite "10.1038/s43588-022-00387-x" >}} with ONT's
 [`dorado polish`][dorado-docs].
 
-- **SNPs:** Clair3 run diploid, with an allele frequency (AF) filter in place of
-  `--haploid_precise`, had the highest median SNP F1 at every depth with both read models. With sup reads its lead over Dorado
+- **SNPs:** Clair3, run in (default) diploid mode, with an allele frequency (AF) filter in place of
+  `--haploid_precise`, had the highest median SNP F1 score at every depth with both read models. With sup reads its lead over Dorado
   grows from 25x up: at 50x it made 23 SNP errors over the 14 genomes, against Dorado's 83.
-  With hac reads at 50x it is only just ahead.
-- **Clair3 with the paper's settings vs Dorado:** Dorado calls SNPs better at 5x and 10x,
-  because Clair3 misses more. The two are level at 25x, and Clair3 is slightly ahead at 50x.
+- **Clair3 with the paper's settings vs Dorado:** Dorado calls SNPs better at 5x and 10x, predominantly via improved recall. The two are level at 25x, and Clair3 is slightly ahead at 50x.
 - **Indels:** Clair3 is better at nearly every depth. At 50x its median F1 is 0.990 against
   Dorado's 0.978 for hac, and 0.995 against 0.990 for sup.
 - **Default filters:** Dorado's `PASS` filter lets too much through at low depth. Its QUAL
@@ -47,7 +45,7 @@ filter.
 
 In our [eLife paper][paper] {{< cite "10.7554/eLife.98300" >}} we benchmarked variant callers on
 ONT reads from 14 bacterial species, using truth sets made by mutating each sample's own
-reference genome. Clair3 came out on top. Three things have changed since:
+reference genome. We found Clair3 came out on top, but three things have since changed since:
 
 1. ONT now offers [`dorado polish`][dorado-docs] with `--vcf` as a way to call variants
    against a haploid reference. Its `--bacteria` model was trained for polishing bacterial
@@ -69,19 +67,21 @@ So the question for this post is:
 
 ## Methods
 
-The [workflow][workflow] lives in the NanoVarBench repository, next to the paper's pipeline.
-Every number in this post can be regenerated from it. Here is the outline.
+The [workflow][workflow] lives in the paper's [NanoVarBench](https://github.com/mbhall88/NanoVarBench/) repository.
 
-**Data.** All 14 samples from the paper. I used the hac and sup simplex reads, basecalled with
+### Data
+All 14 samples (species) from the paper. I used the hac and sup simplex reads, basecalled with
 Dorado v4.3.0, that we deposited in the SRA[^reads], and the truth sets [on Zenodo][truth].
 Reads were filtered to ≥1,000 bp and Q≥10.
 
-**Depth.** Reads were subsampled to 5, 10, 25 and 50x with [`rasusa aln`][rasusa]
+### Depth
+Reads were subsampled to 5, 10, 25 and 50x with [`rasusa aln`][rasusa]
 {{< cite "10.21105/joss.03941" >}}. It caps the depth at each position by taking a random
 selection of the reads there, which stops high-copy plasmids from using up the read budget
 and gives more even coverage than the paper's genome-wide subsampling[^depth].
 
-**Variant calling.** I compared four arms, each changing one thing from the one before:
+### Variant calling 
+I compared four arms:
 
 | Arm | Aligner | Caller | Model |
 | :--- | :--- | :--- | :--- |
@@ -95,16 +95,14 @@ Clair3 ran with the paper's options (`--haploid_precise --include_all_ctgs --no_
 minimum depth. C and D used the *same* alignment file, so the caller is the only difference
 between them[^any-bam].
 
-**Clair3 with an AF filter.** Clair3's models are diploid, so at each site it calls a genotype:
-0/0 is homozygous for the reference allele (REF), 0/1 heterozygous, and 1/1 homozygous for
-the alternative allele (ALT).
-A bacterial chromosome is haploid, so a heterozygous ("het") call has to become one allele or
+### Clair3 with an AF filter 
+Clair3's models are diploid. A bacterial chromosome is haploid, so a heterozygous ("het") call has to become one allele or
 the other, and Clair3's two haploid modes do this in opposite ways. `--haploid_precise`
 keeps only the homozygous calls and drops every het. `--haploid_sensitive` keeps every het as
 a variant. As a fifth line in the figures, I ran Clair3 (Arm C) with neither flag, and turned
 each het into the ALT if the ALT's allele frequency (`FORMAT/AF`, the fraction of reads carrying
-it) was ≥ 0.65, and into the reference otherwise. Homozygous calls were left alone. [The
-script][af-script] is short. Here is what each mode does with a SNP:
+it) was ≥ 0.65, and into the reference otherwise. See [this
+script][af-script]. Here is what each mode does with a SNP:
 
 | Clair3's diploid call | `--haploid_precise` | `--haploid_sensitive` | AF filter (≥ 0.65) |
 | :--- | :---: | :---: | :---: |
@@ -116,11 +114,12 @@ script][af-script] is short. Here is what each mode does with a SNP:
 
 At a site with two ALTs (1/2), the filter takes the ALT with the higher AF if it is ≥ 0.65,
 and the reference otherwise. I chose 0.65 by testing thresholds from 0.50 to 0.80 in steps of
-0.05 ([results][af-sweep]), on the same data. 0.65 was best overall. Below it, too many false
+0.05 ([see here][af-sweep]), on the same data. 0.65 was best overall. Below it, too many false
 positives get through at 5x, where 3 of 5 reads is an AF of 0.6. Since the threshold was
 picked on the data I report, treat the AF filter's numbers as slightly optimistic.
 
-**Evaluation.** Every call set went through the same filtering as the paper, and was scored
+## Evaluation 
+Every call set went through the same filtering as the paper, and was scored
 with vcfdist {{< cite "10.1038/s41467-023-43876-x" >}} v2.6.4. QUAL is the caller's
 Phred-scaled confidence in each call (the VCF `QUAL` column). I report two scores:
 
@@ -135,7 +134,7 @@ they are false negatives plus false positives, summed over the samples.
 
 ### SNPs: Clair3 with the AF filter is best
 
-{{< figure src="best-f1-depth.png" alt="Median F1 against depth for SNPs and indels, hac and sup reads, for each arm and for Clair3 with the AF filter." caption="**Figure 1:** Median F1 over the 14 samples against depth, for SNPs (top) and indels (bottom) with hac (left) and sup (right) reads. Solid lines are Best F1; dashed lines with open markers are the Default-PASS score, for Arms C and D and the AF filter. F1 is on a logit scale, which spreads out the differences close to 1. Points are nudged sideways so they don't hide each other; each belongs to the depth below it. AF is allele frequency, the fraction of reads carrying an allele. Arm C + AF filter (0.65) is Clair3 run diploid, with each heterozygous call made the alternative allele when its AF is ≥ 0.65 and the reference otherwise." >}}
+{{< figure src="best-f1-depth.png" alt="Median F1 against depth for SNPs and indels, hac and sup reads, for each arm and for Clair3 with the AF filter." caption="**Figure 1:** Median F1 over the 14 samples against depth, for SNPs (top) and indels (bottom) with hac (left) and sup (right) reads. Solid lines are Best F1; dashed lines with open markers are the Default-PASS score, for Arms C and D and the AF filter. F1 is on a logit scale, which spreads out the differences close to 1. Points are 'jittered' (horizontally) so they don't hide each other; each belongs to the depth below it. AF is allele frequency, the fraction of reads carrying an allele. Arm C + AF filter (0.65) is Clair3 run diploid, with each heterozygous call made the alternative allele when its AF is ≥ 0.65 and the reference otherwise." >}}
 
 Clair3 with the AF filter has the highest median SNP F1 at every depth, for both read models
 (Figure 1, top row):
@@ -172,22 +171,22 @@ Clair3 misses more than Dorado on 13 of the 14[^gap]. By 50x the gap is gone: Cl
 
 The missing SNPs are mostly het calls that `--haploid_precise` throws away. In bacteria, a het
 call often points to a mixed sample, or to variants that arose while the isolate was cultured.
-Repeats can also cause them, in any genome. Reads from another copy of the repeat pile up at
-the same position, so the variant looks as if it is on only some of the reads (Figure 2). On
-one *E. coli* sample at hac 50x, 46 of Clair3's 50 missed SNPs were dropped this way. At low depth
+Though repeats can also cause them. Reads from another copy of the repeat pile up at
+the same position, so the variant looks as if it is on only some of the reads (Figure 2). On one
+*E. coli* sample at hac 50x, 46 of Clair3's 50 missed SNPs were dropped this way. At low depth
 many more true SNPs are called het: at hac 10x, the het calls the AF filter rescues have a
 median AF of 0.8 to 0.9 in each sample.
 
 {{< figure src="het-call-repeat.png" alt="Diagram: reads from a second repeat copy align to the first, making a true SNP look heterozygous, which --haploid_precise drops and the AF filter keeps." caption="**Figure 2:** How a repeat turns a true SNP into a het call. **a**, The sequenced genome has two similar copies of a repeat, like the two 7.5 kb copies, 96.5% identical, in our *E. coli* sample. The SNP (T) is in copy 1 only. **b**, Some reads from copy 2 align to copy 1 with full mapping quality (MAPQ 60), carrying the reference base (C), so only some of the reads at the SNP carry the ALT. The read counts are illustrative: at the SNPs Clair3 missed in this sample, 60–85% of reads carried the ALT. **c**, Clair3's diploid model calls the site heterozygous. `--haploid_precise` drops the call, and `--haploid_sensitive` and the AF filter both call the ALT. A mixed sample, with reads from another strain in place of the reads from copy 2, gives the same kind of pileup." >}}
 
 `--haploid_sensitive` keeps those calls, but it also keeps minority alleles at around 20% AF,
-and QUAL can't tell those apart from the real variants. AF can. With the filter, Clair3's
+and QUAL can't tell those apart from the real variants. With the filter, Clair3's
 misses at hac 10x fall from 2,478 to 304, for 78 more false positives. Its indels are no worse
 at any depth, and a little better at low depth (sup 5x: 0.935 to 0.950).
 
 The 0.65 threshold works across samples, depths and read models. Compared with each
 sample's own best threshold, the typical sample loses nothing at 0.65. The worst one loses
-0.001 SNP F1 and 0.017 indel F1. 0.70 and 0.75 are almost as good.
+0.001 SNP F1 and 0.017 indel F1. **0.70 and 0.75 are almost as good.**
 
 ### Indels: Clair3 is better
 
@@ -250,7 +249,7 @@ Median per 50x read set, over 28 read sets (14 samples, hac and sup), on 8 threa
 {{< figure src="runtime-memory.png" alt="Wall time and peak RAM of variant calling against depth for each arm, on log scales." caption="**Figure 5:** Wall time (left) and peak RAM (right) of variant calling against depth, both on log scales. Points are medians over the 28 read sets (14 samples, hac and sup) and bars show the range. Clair3 (Arms A-C) ran on 8 threads of an AMD EPYC 9745, and `dorado polish` (Arm D) on one NVIDIA H100 with 8 threads. The open marker is Dorado run on 8 CPU threads at 50x, for timing only. Alignment isn't shown. Peak RAM is host memory: Dorado's GPU memory isn't measured." >}}
 
 On a GPU, Dorado is at least ten times faster than Clair3 at every depth (Figure 5). On CPU it
-takes about as long, but needs much more memory. Clair3 took *longer* at 5x and
+takes about as long, but needs much more memory. However, waiting in the queue on my HPC for a GPU took longer than the difference in time to CPU, so realistically, I would just use CPU unless you have instant access to a H100 and are *extremely* impatient (or need to call 1000's of samples). Clair3 took *longer* at 5x and
 10x (two to three minutes) than at 50x, and used more memory too. I haven't looked into why.
 The full breakdown, including alignment, is in [Table 1](table1-runtime-memory.csv).
 
@@ -259,7 +258,7 @@ The full breakdown, including alignment, is in [Table 1](table1-runtime-memory.c
 - **Only v4.3.0 reads.** These are the reads from the paper. Newer basecalling models give
   more accurate reads, and both callers may do better on them.
 - **Clair3's bacterial model wasn't tested.** Clair3 now ships a model fine-tuned on bacteria
-  (`r1041_e82_400bps_sup_v430_bacteria_finetuned`). It was [trained on 12 of these 14
+  (`r1041_e82_400bps_sup_v430_bacteria_finetuned`). It was [trained on 12 of our 14
   samples][clair3-ft], so testing it here would mean scoring it on its own training data.
 - **`dorado smallvar` wasn't tested properly.** Dorado's new small variant caller only has
   models for hac v5.2.0 and v6.0.0 reads. I tried forcing the v6.0.0 model onto our v4.3.0 reads
@@ -285,7 +284,7 @@ If you are calling variants in bacterial genomes from ONT reads:
 
 ## Acknowledgements
 
-Thanks to Ryan Wick, who got this started and reviewed a draft.
+Thanks to Ryan Wick, who got the ball rolling on this.
 
 ## Appendix
 
