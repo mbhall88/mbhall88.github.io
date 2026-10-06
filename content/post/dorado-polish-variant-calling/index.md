@@ -1,20 +1,23 @@
 ---
-title: "Comparing Dorado polish to Clair3 for bacterial variant calling"
-description: Benchmarking `dorado polish` against Clair3, plus an allele frequency filter that improves on Clair3, the existing gold standard.
-date: 2026-10-06T16:08:00+10:00
+ShowToc: 'true'
+date: 2026-10-06 16:08:00+10:00
+description: Benchmarking `dorado polish` against Clair3, plus an allele frequency
+  filter that improves on Clair3, the existing gold standard.
+doi: 10.5281/zenodo.23184310
 draft: false
 has_table: true
 images:
-  - social-preview.png
-tags:
-  - variant-calling
-  - dorado
-  - clair3
-  - nanopore
-  - benchmarking
-ShowToc: "true"
+- social-preview.png
 math: true
+tags:
+- variant-calling
+- dorado
+- clair3
+- nanopore
+- benchmarking
+title: Comparing Dorado polish to Clair3 for bacterial variant calling
 ---
+
 
 > **If you use these results, please cite the paper they build on:**
 > Hall MB, *et al.* [Benchmarking reveals superiority of deep learning variant callers on
