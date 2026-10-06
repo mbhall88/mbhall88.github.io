@@ -1,8 +1,8 @@
 ---
 title: "Comparing Dorado polish to Clair3 for bacterial variant calling"
 description: Benchmarking `dorado polish` against Clair3, plus an allele frequency filter that improves on Clair3, the existing gold standard.
-date: 2026-10-05T08:09:00+10:00
-draft: true
+date: 2026-10-06T16:08:00+10:00
+draft: false
 has_table: true
 images:
   - social-preview.png
@@ -47,7 +47,7 @@ with a couple of updated tools. I then compared the paper's best caller, Clair3
 
 In our [eLife paper][paper] {{< cite "10.7554/eLife.98300" >}} we benchmarked variant callers on
 ONT reads from 14 bacterial species, using truth sets made by mutating each sample's own
-reference genome. We found Clair3 came out on top, but three things have since changed since:
+reference genome. We found Clair3 came out on top, but three things have changed since:
 
 1. ONT now offers [`dorado polish`][dorado-docs] with `--vcf` as a way to call variants
    against a haploid reference. Its `--bacteria` model was trained for polishing bacterial
@@ -120,7 +120,7 @@ and the reference otherwise. I chose 0.65 by testing thresholds from 0.50 to 0.8
 positives get through at 5x, where 3 of 5 reads is an AF of 0.6. Since the threshold was
 picked on the data I report, treat the AF filter's numbers as slightly optimistic.
 
-## Evaluation 
+### Evaluation
 Every call set went through the same filtering as the paper, and was scored
 with vcfdist {{< cite "10.1038/s41467-023-43876-x" >}} v2.6.4. QUAL is the caller's
 Phred-scaled confidence in each call (the VCF `QUAL` column). I report two scores:
@@ -251,7 +251,7 @@ Median per 50x read set, over 28 read sets (14 samples, hac and sup), on 8 threa
 {{< figure src="runtime-memory.png" alt="Wall time and peak RAM of variant calling against depth for each arm, on log scales." caption="**Figure 5:** Wall time (left) and peak RAM (right) of variant calling against depth, both on log scales. Points are medians over the 28 read sets (14 samples, hac and sup) and bars show the range. Clair3 (Arms A-C) ran on 8 threads of an AMD EPYC 9745, and `dorado polish` (Arm D) on one NVIDIA H100 with 8 threads. The open marker is Dorado run on 8 CPU threads at 50x, for timing only. Alignment isn't shown. Peak RAM is host memory: Dorado's GPU memory isn't measured." >}}
 
 On a GPU, Dorado is at least ten times faster than Clair3 at every depth (Figure 5). On CPU it
-takes about as long, but needs much more memory. However, waiting in the queue on my HPC for a GPU took longer than the difference in time to CPU, so realistically, I would just use CPU unless you have instant access to a H100 and are *extremely* impatient (or need to call 1000's of samples). Clair3 took *longer* at 5x and
+takes about as long, but needs much more memory. However, waiting in the queue on my HPC for a GPU took longer than the difference in time to CPU, so realistically, I would just use CPU unless you have instant access to an H100 and are *extremely* impatient (or need to call thousands of samples). Clair3 took *longer* at 5x and
 10x (two to three minutes) than at 50x, and used more memory too. I haven't looked into why.
 The full breakdown, including alignment, is in [Table 1](table1-runtime-memory.csv).
 
