@@ -31,7 +31,7 @@ with the latest tools, and added ONT's `dorado polish --bacteria --vcf` alongsid
   0.896 vs 0.796).
 - **Why Clair3 misses SNPs at low depth:** `--haploid_precise` throws away the variants Clair3
   calls as heterozygous. Running Clair3 diploid and keeping a het when its allele frequency is
-  ≥0.65 gives Clair3 the best SNP *and* indel results of any setup I tested.
+  ≥0.65 gives Clair3 the best SNP *and* indel results of anything I tested.
 - **Dorado's default filter is too lenient at low depth.** At 5x, its `PASS` calls include many
   low-quality false positives. Its QUAL score separates them well, though, so filtering on
   QUAL helps a lot.
@@ -71,12 +71,12 @@ filtered to ≥1,000 bp and Q≥10.
 {{< cite "10.21105/joss.03941" >}}, which caps the depth at each position rather than
 picking reads at random. This keeps high-copy plasmids from using up the read budget, and gives
 much more even coverage than the paper's random subsampling. So low-depth recall here is **not**
-directly comparable with the paper's figures. It is the same for every setup in this post,
+directly comparable with the paper's figures. It is the same for every arm in this post,
 though.
 
-**Variant calling.** I compared four setups, each changing one thing from the one before:
+**Variant calling.** I compared four arms, each changing one thing from the one before:
 
-| Setup | Aligner | Caller | Model |
+| Arm | Aligner | Caller | Model |
 | :--- | :--- | :--- | :--- |
 | A (paper) | minimap2 2.26 `map-ont` | Clair3 1.0.5 | v4.3.0 hac/sup |
 | B (`lr:hq` post) | minimap2 2.31 `lr:hq` | Clair3 1.0.5 | v4.3.0 hac/sup |
@@ -97,12 +97,12 @@ between them.
 > `dorado aligner` on one sample: the calls were identical, though the QUAL values of some
 > records differed slightly.
 
-**Evaluation.** Every setup's calls went through the same filtering as the paper, and were
+**Evaluation.** Every arm's calls went through the same filtering as the paper, and were
 scored with vcfdist {{< cite "10.1038/s41467-023-43876-x" >}} v2.6.4. I report two scores:
 
 - **Best F1:** the best F1 over all QUAL thresholds, i.e. what you get if you tune a
   threshold.
-- **Default:** only the calls the caller marks `PASS`, i.e. what you get out of the box.
+- **Default-PASS:** only the calls the caller marks `PASS`, i.e. what you get out of the box.
 
 All numbers are medians over the 14 samples unless stated otherwise.
 
@@ -110,7 +110,7 @@ All numbers are medians over the 14 samples unless stated otherwise.
 
 ### SNPs: Dorado is better at low depth
 
-{{< figure src="best-f1-depth.png" alt="Best F1 against depth for SNPs and indels, hac and sup reads, for each setup." caption="**Figure 1:** Median F1 against depth, on a logit scale to spread out the differences close to 1. Solid lines are Best F1, dashed lines are the default (PASS-only) score. The green line is Clair3 with the allele frequency filter, described below." >}}
+{{< figure src="best-f1-depth.png" alt="Median F1 against depth for SNPs and indels, hac and sup reads, for each arm." caption="**Figure 1:** Median F1 over the 14 samples against depth, for SNPs (top) and indels (bottom) with hac (left) and sup (right) reads. Solid lines are Best F1; dashed lines with open markers are the Default-PASS score, for Arms C and D and the AF filter. F1 is on a logit scale, which spreads out the differences close to 1. Depth is a per-position cap, not a random genome-wide subsample, so low-depth results aren't directly comparable with the paper's. Arm C + AF filter (0.65) is Clair3 run diploid, with each heterozygous call made the alternative allele when its allele frequency is at least 0.65 and the reference otherwise (see below); it is an extra analysis, not one of the four arms." >}}
 
 At 5x and 10x, Dorado calls SNPs better than Clair3 (Figure 1, top row):
 
@@ -171,19 +171,19 @@ so treat these numbers as slightly optimistic.
 
 The dashed lines in Figure 1 show what you get without tuning a threshold. Clair3's `PASS`
 filter costs it very little. Dorado's costs a lot at low depth: at hac 5x its indel F1 falls
-from 0.796 (Best F1) to 0.419 (default).
+from 0.796 (Best F1) to 0.419 (Default-PASS).
 
 The problem isn't that Dorado filters too much, but too little. At hac 5x, Dorado's `PASS`
 calls include 9,540 false positive indels across the samples, against 503 at the best
 threshold. Dorado marks fewer than 4% of its records `LowQual`.
 
-{{< figure src="pr-curves.png" alt="Precision-recall curves over QUAL for each setup at 10x and 50x." caption="**Figure 2:** Precision-recall curves over QUAL at 10x and 50x, with all samples pooled. Markers show the default (PASS-only) score." >}}
+{{< figure src="pr-curves.png" alt="Precision-recall curves over QUAL for each arm at 10x and 50x." caption="**Figure 2:** Precision-recall curves over QUAL thresholds at 10x and 50x, for SNPs (top) and indels (bottom). Each curve pools all 14 samples, summing their true and false calls at each threshold. Markers show each arm's Default-PASS score, pooled the same way. Each panel is zoomed to its own range. Arm C + AF filter (0.65) is Clair3 run diploid, with each heterozygous call made the alternative allele when its allele frequency is at least 0.65 and the reference otherwise (see above); it is an extra analysis, not one of the four arms." >}}
 
 That answers Ryan's question: Dorado's QUAL *does* separate bad calls from good ones, at least
 at low depth (Figure 2). The best threshold depends on depth, though. Here is Dorado's indel F1
 at a few fixed thresholds:
 
-| Reads | Depth | Best F1 | Default | QUAL ≥ 5 | QUAL ≥ 10 |
+| Reads | Depth | Best F1 | Default-PASS | QUAL ≥ 5 | QUAL ≥ 10 |
 | :--- | ---: | ---: | ---: | ---: | ---: |
 | hac | 5x | 0.796 | 0.419 | 0.565 | 0.755 |
 | hac | 10x | 0.927 | 0.872 | 0.910 | 0.923 |
@@ -196,7 +196,7 @@ costs much less (hac 5x: 0.986 vs 0.991).
 
 ### Per sample
 
-{{< figure src="per-sample-best-f1.png" alt="Best F1 per sample at each depth for each setup, with dnd samples shaded." caption="**Figure 3:** Best F1 for every sample, at every depth, on a logit scale. Perfect scores (F1 = 1) are drawn in their own column after the dotted line. The two shaded samples carry *dnd* phosphorothioate systems." >}}
+{{< figure src="per-sample-best-f1.png" alt="Best F1 per sample at each depth for each arm, with dnd samples shaded." caption="**Figure 3:** Best F1 for every sample at every depth, for SNPs and indels with hac and sup reads. F1 is on a logit scale and each panel has its own axis. A perfect score (F1 = 1) has no place on a logit scale, so perfect scores are drawn in their own column after the dotted line. The two shaded samples, *S. enterica* and *V. parahaemolyticus*, carry *dnd* phosphorothioate systems ([dorado#1599](https://github.com/nanoporetech/dorado/issues/1599)). Arm C + AF filter (0.65) is Clair3 run diploid, with each heterozygous call made the alternative allele when its allele frequency is at least 0.65 and the reference otherwise (see above); it is an extra analysis, not one of the four arms." >}}
 
 The pattern holds across samples (Figure 3). At hac 10x, Dorado beats the paper's Clair3
 settings on SNPs for 13 of the 14 samples, and Clair3 beats Dorado on indels for all 14 at hac
@@ -209,7 +209,7 @@ reported for reads basecalled with hac v6.0, and our reads are v4.3.0.
 
 ### Newer Clair3 and `lr:hq` change little
 
-Setups A, B and C are almost indistinguishable in Figure 1. Moving from `map-ont` to `lr:hq`
+Arms A, B and C are almost indistinguishable in Figure 1. Moving from `map-ont` to `lr:hq`
 changed median Best F1 by at most 0.0003. Moving from Clair3 1.0.5 to 2.0.3 with the same (converted)
 models gave identical Best F1 for every sample, depth and read model. Clair3 2.0.3 is faster,
 though.
@@ -271,7 +271,7 @@ Thanks to Ryan Wick, whose polishing posts prompted this, and for reviewing a dr
 The [workflow][workflow], the aggregated tables and the figures are in the NanoVarBench
 repository.
 
-{{< csv-table src="table-s1-per-sample.csv" caption="Table S1: Per-sample results for every setup, depth and read model, with actual depths" >}}
+{{< csv-table src="table-s1-per-sample.csv" caption="Table S1: Per-sample results for every arm, depth and read model, with actual depths" >}}
 
 {{< share-file src="table-s1-per-sample.csv" >}}
 
