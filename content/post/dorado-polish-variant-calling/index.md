@@ -227,10 +227,12 @@ Median per 50x read set, over 28 read sets (14 samples, hac and sup), on 8 threa
 | Variant calling | `dorado polish` | GPU | 4.6 s | 1.4 GB |
 | Variant calling | `dorado polish` | CPU | 59 s | 9.7 GB |
 
-On a GPU, Dorado is about ten times faster than Clair3. On CPU it takes about as long, but
-needs much more memory. One oddity: Clair3 took *longer* at 5x and 10x (two to three minutes)
-than at 50x. I haven't looked into why. The full breakdown is in
-[Table 1](table1-runtime-memory.csv).
+{{< figure src="runtime-memory.png" alt="Wall time and peak RAM of variant calling against depth for each arm, on log scales." caption="**Figure 4:** Wall time (left) and peak RAM (right) of variant calling against depth, both on log scales. Points are medians over the 28 read sets (14 samples, hac and sup) and bars show the range. Clair3 (Arms A-C) ran on 8 threads of an AMD EPYC 9745, and `dorado polish` (Arm D) on one NVIDIA H100 with 8 threads. The open marker is Dorado run on 8 CPU threads at 50x, for timing only. Alignment isn't shown. Peak RAM is host memory: Dorado's GPU memory isn't measured." >}}
+
+On a GPU, Dorado is at least ten times faster than Clair3 at every depth (Figure 4). On CPU it
+takes about as long, but needs much more memory. One oddity: Clair3 took *longer* at 5x and
+10x (two to three minutes) than at 50x, and used more memory too. I haven't looked into why.
+The full breakdown, including alignment, is in [Table 1](table1-runtime-memory.csv).
 
 ## Why not Clair3's bacterial model?
 
